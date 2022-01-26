@@ -1,0 +1,14 @@
+name: scSpatial
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python
+  - scanpy
+  - napari
+  - pip
+  - pip:
+    - scconnect
+    - git+https://github.com/linnarsson-lab/BoneFight.git@8c1ec1f
+    - git+https://github.com/linnarsson-lab/loompy.git@master
+    - cellpose[all]
