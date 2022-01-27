@@ -1,12 +1,15 @@
-# Goal: Function which allows you to choose a file from a pop up window
-# Tkinter
+def select_file() -> str:
+    """Opens a file select window and return the path to selected file"""
+    import tkinter as tk
+    from tkinter import filedialog
 
-import tkinter as tk
-from tkinter import filedialog
+    root = tk.Tk()
+    root.withdraw()
 
-root = tk.Tk()
-root.withdraw()
+    file_path = filedialog.askopenfilename()
 
-file_path = filedialog.askopenfilename()
+    return file_path
 
-print(file_path)
+
+if __name__ == "main":
+    select_file()
