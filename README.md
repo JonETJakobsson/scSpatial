@@ -8,7 +8,7 @@ Create an environment in using the file [Environment file](environment.yml). Thi
 Activate the environment using `conda activate scSpatial`.
 
 
-# testing code
+# Testing code
 You can test your code at the end of the module you are working on using an if statment checking if the file is runned, or if it is just loaded. used the code
 
     if __name__ == "main":
