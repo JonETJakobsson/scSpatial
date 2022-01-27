@@ -11,5 +11,6 @@ def select_file() -> str:
     return file_path
 
 
-if __name__ == "main":
-    select_file()
+if __name__ == "__main__":
+    path = select_file()
+    print(path)
