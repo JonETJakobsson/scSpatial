@@ -14,7 +14,8 @@ def select_file(title: str) -> str:
 
     return file_path
 
-def open_image(channel: str=None)->numpy.ndarray:
+
+def open_image(channel: str = None) -> numpy.ndarray:
     import napari
 
     path = select_file(title=channel)
@@ -22,6 +23,7 @@ def open_image(channel: str=None)->numpy.ndarray:
     viewer = napari.Viewer(show=True)
     viewer.add_image(image, name=channel)
     napari.run()
+
 
 if __name__ == "__main__":
     open_image("Dapi")
