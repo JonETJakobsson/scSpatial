@@ -1,7 +1,9 @@
 # Class represening raw dataset
 from utility import select_file
+from segmentation import Segmentation
 import imageio
 import pandas as pd
+import napari
 
 
 class Dataset:
@@ -57,11 +59,16 @@ class Dataset:
         df = pd.read_csv(path)
         self.gene_expression = df
 
+    def run_segmentation(self, method, size):
+        self.segmentation = Segmentation(self, method=method, size=size)
+
 
 if __name__ == "__main__":
     d1 = Dataset(name="lumbar_1")
-    # d1.load_nuclei()
+    d1.load_nuclei()
     # d1.load_cytoplasm()
     # d1.load_other_channel(channel="green")
     d1.load_gene_expression()
-    print(Dataset.all)
+    d1.run_segmentation(method="nuclei", size=40)
+
+    napari.view_label(d1.segmentation.objects)
