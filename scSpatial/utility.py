@@ -16,6 +16,7 @@ def select_file(title: str) -> str:
 
 
 def open_image(channel: str = None) -> numpy.ndarray:
+    """Reads an image with Imageio and run the image in Napari"""
     import napari
 
     path = select_file(title=channel)
