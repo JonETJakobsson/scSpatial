@@ -71,4 +71,6 @@ if __name__ == "__main__":
     d1.load_gene_expression()
     d1.run_segmentation(method="nuclei", size=40)
 
-    napari.view_labels(d1.segmentation.objects)
+    viewer = napari.view_image(d1.images["Nuclei"])
+    viewer.add_labels(d1.segmentation.objects)
+    napari.run()
