@@ -28,7 +28,7 @@ class SegmentNuclei(Segmentation):
         self.flow_threshold = flow_threshold
         self.mask_threshold = mask_threshold
 
-    def run(self, dataset):
+    def run(self, dataset):   
         model = models.Cellpose(model_type="nuclei")
         masks, flows, styles, diams = model.eval(
             dataset.images["Nuclei"],
@@ -53,10 +53,17 @@ class SegmentCytoplasm(Segmentation):
 
     def run(self, dataset):
         """segment image using nuclei information"""
+        import numpy as np
+
+        y, x = dataset.images["Cytoplasm"].shape
+        arr = np.ndarray((2, y, x))
+        arr[0] = dataset.images["Nuclei"]
+        arr[1] =  dataset.images["Cytoplasm"]
+
         model = models.Cellpose(model_type="cyto")
         masks, flows, styles, diams = model.eval(
-            [dataset.images["Cytoplasm"], dataset.images["Nuclei"]],
-            channels=[0,0],
+            x=arr,
+            channels=[2,1],
             diameter=self.size,
             flow_threshold=self.flow_threshold,
             mask_threshold=self.mask_threshold,
