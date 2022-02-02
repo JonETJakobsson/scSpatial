@@ -55,11 +55,11 @@ class SegmentCytoplasm(Segmentation):
         """segment image using nuclei information"""
         import numpy as np
 
-        y, x = dataset.images["Cytoplasm"].shape
-        arr = np.ndarray((2, y, x))
-        arr[0] = dataset.images["Nuclei"]
-        arr[1] = dataset.images["Cytoplasm"]
-
+        n = dataset.images["Nuclei"]
+        c = dataset.images["Cytoplasm"]
+        
+        # Stack nuclei and cytoplasm images into a channel image
+        arr = np.dstack((n, c))
         model = models.Cellpose(model_type="cyto")
         masks, flows, styles, diams = model.eval(
             x=arr,
