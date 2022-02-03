@@ -7,29 +7,38 @@ from segmentation import SegmentNuclei, SegmentCytoplasm
 logging.basicConfig(level=logging.DEBUG)
 
 
+# Assigning the class Dataset to the variable d1 /KM
 d1 = Dataset(name="lumbar_1")
+# Loading Nuclei and Cytoplasm images and storing(is it storing them?) them in d1 /KM
 d1.load_nuclei()
 d1.load_cytoplasm()
 # d1.load_other_channel(channel="green")
 d1.load_gene_expression()
+# Assigning the gene expression information in variable df/dataframe(?) /KM
 df = d1.gene_expression
 
+# Creating a list called idx /KM
 idx = list()
+# For loop, goes through the genes in each row of our data and all genes that fit the coordinates critera will be put into list idx /KM
 for i, gene in df.iterrows():
     if gene.PosX > 6000 and gene.PosX <= 8000:
         if gene.PosY > 5000 and gene.PosY <=6000:
             idx.append(i)
+# iloc lets us choose a specific location/cell in our list. Subtracting specific values from the X and Y coordinates /KM
 df = df.iloc[idx]
 df.PosX = df.PosX-6000
 df.PosY = df.PosY-5000
 df
+# Altering our cytoplasm and nuclei images to the same coordinates that we have in our gene list /KM
 d1.images["Cytoplasm"] = d1.images["Cytoplasm"][5000:6000, 6000:8000]
 
 d1.images["Nuclei"] = d1.images["Nuclei"][5000:6000, 6000:8000]
 
+# Running the segmentation process which is defined in the segmentation.py code, setting our own values /KM
 seg = SegmentCytoplasm(size=120, flow_threshold=0.4, mask_threshold=0)
 d1.run_segmentation(seg)
 
+# Choosing Napari as the program we want to look in, labeling our axis, adding our images and assigning color to them. The genes are added as dots and the gene name is added as text /KM
 viewer = napari.Viewer(axis_labels=["Dorsoventral", "Mediolateral"])
 
 viewer.add_image(d1.images["Nuclei"], name="Nuclei", colormap="yellow")
