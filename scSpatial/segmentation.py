@@ -17,9 +17,6 @@ class Segmentation:
         """Segment image and return the segmentation object"""
         pass
 
-    def __add_to_dataset(self, dataset):
-        "Add segmentation to the dataset object"
-        dataset.segmentation.append(self)
 
     def map_genes(self, dataset):
         """map genes to segmented objects.
@@ -55,7 +52,7 @@ class SegmentNuclei(Segmentation):
 
         self.objects = masks
         
-        self.__add_to_dataset(dataset)
+        dataset.segmentation.append(self)
 
 
 class SegmentCytoplasm(Segmentation):
@@ -88,4 +85,4 @@ class SegmentCytoplasm(Segmentation):
 
         self.objects = masks
         
-        self.__add_to_dataset(dataset)
+        dataset.segmentation.append(self)

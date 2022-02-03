@@ -46,7 +46,7 @@ viewer.add_image(
     d1.images["Cytoplasm"], name="Cytoplasm", blending="additive", colormap="cyan"
 )
 
-viewer.add_points(data=list(zip(df.y, df.x)), properties=df, text="Gene")
+viewer.add_points(data=list(zip(df.y, df.x)), properties=df, text="gene")
 
 viewer.add_labels(d1.segmentation[0].objects)
 napari.run()
