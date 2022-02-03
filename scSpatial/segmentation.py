@@ -1,5 +1,6 @@
 # Class to make segmentation of image and integrate object related data
 from cellpose import models
+import pandas as pd
 
 
 class Segmentation:
@@ -16,6 +17,18 @@ class Segmentation:
     def run(self, dataset):
         """Segment image and return the segmentation object"""
         pass
+
+    def map_genes(self, dataset):
+        """map genes to segmented objects.
+        return: gene expression matrix under self.gene_expression"""
+        gene_map = list()
+        for i, gene in dataset.gene_expression.iterrows():
+            object_id = self.objects[int(gene.y), int(gene.x)]
+            gene_map.append((gene.gene, object_id, 1))
+
+        df = pd.DataFrame(gene_map, columns=["gene", "object_id", "value"])
+        df = df.pivot_table(index="object_id", columns="gene", fill_value=0, aggfunc=sum)
+        self.gene_expression = df
 
 
 class SegmentNuclei(Segmentation):
@@ -57,7 +70,7 @@ class SegmentCytoplasm(Segmentation):
 
         n = dataset.images["Nuclei"]
         c = dataset.images["Cytoplasm"]
-        
+
         # Stack nuclei and cytoplasm images into a channel image
         arr = np.dstack((n, c))
         model = models.Cellpose(model_type="cyto")

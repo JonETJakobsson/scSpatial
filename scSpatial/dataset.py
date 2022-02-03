@@ -56,6 +56,13 @@ class Dataset:
             )
 
         df = pd.read_csv(path)
+
+        # TODO Add interface to manually supply which columns that represent x, y and gene_name
+        # Currently this is hard coded bellow. We might want to add more columns such as confident scores etc
+        # in the future
+        df = df[["PosX", "PosY", "Gene"]]
+        df.columns = ["x", "y", "gene"]
+
         self.gene_expression = df
 
     def run_segmentation(self, segmentation: Segmentation):
