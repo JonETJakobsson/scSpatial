@@ -21,13 +21,13 @@ df = d1.gene_expression
 idx = list()
 # For loop, goes through the genes in each row of our data and all genes that fit the coordinates critera will be put into list idx /KM
 for i, gene in df.iterrows():
-    if gene.PosX > 6000 and gene.PosX <= 8000:
-        if gene.PosY > 5000 and gene.PosY <=6000:
+    if gene.x > 6000 and gene.x <= 8000:
+        if gene.y > 5000 and gene.y <= 6000:
             idx.append(i)
 # iloc lets us choose a specific location/cell in our list. Subtracting specific values from the X and Y coordinates /KM
 df = df.iloc[idx]
-df.PosX = df.PosX-6000
-df.PosY = df.PosY-5000
+df.x = df.x - 6000
+df.y = df.y - 5000
 df
 # Altering our cytoplasm and nuclei images to the same coordinates that we have in our gene list /KM
 d1.images["Cytoplasm"] = d1.images["Cytoplasm"][5000:6000, 6000:8000]
@@ -42,8 +42,10 @@ d1.run_segmentation(seg)
 viewer = napari.Viewer(axis_labels=["Dorsoventral", "Mediolateral"])
 
 viewer.add_image(d1.images["Nuclei"], name="Nuclei", colormap="yellow")
-viewer.add_image(d1.images["Cytoplasm"], name="Cytoplasm", blending="additive", colormap="cyan")
-viewer.add_points(data=list(zip(df.PosY, df.PosX)), properties=df, text="Gene")
+viewer.add_image(
+    d1.images["Cytoplasm"], name="Cytoplasm", blending="additive", colormap="cyan"
+)
+viewer.add_points(data=list(zip(df.y, df.x)), properties=df, text="Gene")
 
 viewer.add_labels(d1.segmentation.objects)
 napari.run()
