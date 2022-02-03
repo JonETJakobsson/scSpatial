@@ -28,7 +28,7 @@ d1.images["Cytoplasm"] = d1.images["Cytoplasm"][5000:6000, 6000:8000]
 d1.images["Nuclei"] = d1.images["Nuclei"][5000:6000, 6000:8000]
 
 seg = SegmentCytoplasm(size=120, flow_threshold=0.4, mask_threshold=0)
-d1.run_segmentation(seg)
+seg.run(d1)
 
 viewer = napari.Viewer(axis_labels=["Dorsoventral", "Mediolateral"])
 
@@ -36,7 +36,8 @@ viewer.add_image(d1.images["Nuclei"], name="Nuclei", colormap="yellow")
 viewer.add_image(
     d1.images["Cytoplasm"], name="Cytoplasm", blending="additive", colormap="cyan"
 )
+
 viewer.add_points(data=list(zip(df.y, df.x)), properties=df, text="Gene")
 
-viewer.add_labels(d1.segmentation.objects)
+viewer.add_labels(d1.segmentation[0].objects)
 napari.run()

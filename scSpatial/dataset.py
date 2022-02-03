@@ -20,6 +20,7 @@ class Dataset:
         # Create datastructures
         self.images = dict()
         self.gene_expression = None
+        self.segmentation = list() # Note, these are now added from the segmentation class
 
         # Add dataset to class dictionary
         self.all[name] = self
@@ -64,6 +65,3 @@ class Dataset:
         df.columns = ["x", "y", "gene"]
 
         self.gene_expression = df
-
-    def run_segmentation(self, segmentation: Segmentation):
-        self.segmentation = segmentation.run(self)

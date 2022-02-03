@@ -9,14 +9,17 @@ class Segmentation:
 
         methods:
         -------
-        self.run(): Runs the segmentation and returns a label image (Mask)
-        with unique values for each object.
-
+        self.run(Dataset): Runs the segmentation on the dataset. 
+        and stores segmentation under self.objects
         """
 
     def run(self, dataset):
         """Segment image and return the segmentation object"""
         pass
+
+    def __add_to_dataset(self, dataset):
+        "Add segmentation to the dataset object"
+        dataset.segmentation.append(self)
 
     def map_genes(self, dataset):
         """map genes to segmented objects.
@@ -51,7 +54,8 @@ class SegmentNuclei(Segmentation):
         )
 
         self.objects = masks
-        return self
+        
+        self.__add_to_dataset(dataset)
 
 
 class SegmentCytoplasm(Segmentation):
@@ -83,4 +87,5 @@ class SegmentCytoplasm(Segmentation):
         )
 
         self.objects = masks
-        return self
+        
+        self.__add_to_dataset(dataset)
