@@ -27,7 +27,7 @@ class Segmentation:
             gene_map.append((gene.gene, object_id, 1))
 
         df = pd.DataFrame(gene_map, columns=["gene", "object_id", "value"])
-        df = df.pivot_table(index="object_id", columns="gene", fill_value=0, aggfunc=sum)
+        df = df.pivot_table(index="object_id", columns="gene", values="value", fill_value=0, aggfunc=sum)
         self.gene_expression = df
 
 

@@ -59,9 +59,9 @@ class App:
             d1.images["Cytoplasm"], name="Cytoplasm", blending="additive", colormap="cyan"
         )
 
-        viewer.add_points(data=list(zip(df.y, df.x)), properties=df, text="gene")
+        viewer.add_points(data=list(zip(df.y, df.x)), name="genes", properties=df, text="gene")
 
-        viewer.add_labels(d1.segmentation[0].objects)
+        viewer.add_labels(d1.segmentation[0].objects, name="segmentation")
         viewer.window.add_dock_widget(colorObjectWidget(d1, viewer))
 
         viewer.show()

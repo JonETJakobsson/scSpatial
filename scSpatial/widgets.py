@@ -21,8 +21,8 @@ class colorObjectWidget(QWidget):
 
         self.listwidget = QListWidget(self)
         self.listwidget.move(10, 10)
-        # fetch columns, note multi index with second value beeing gene
-        for _ , gene in self.dataset.segmentation[0].gene_expression.columns:
+
+        for gene in self.dataset.segmentation[0].gene_expression.columns:
             self.listwidget.addItem(gene)
 
         # Connect selection to action
@@ -45,11 +45,11 @@ class colorObjectWidget(QWidget):
         from vispy.color.colormap import Colormap
 
         gene = listItem.text()
-        values = self.dataset.segmentation[0].gene_expression.loc[gene]
+        values = self.dataset.segmentation[0].gene_expression[gene]
         values = np.log1p(values)
         values = minmax_scale(values)
         cmap = Colormap(["b", "r"])
         colors = cmap[values]
         self.viewer.layers["segmentation"].color = dict(
-            zip(self.dataset.segmentation[0].gene_expression.columns, colors.rgba)
+            zip(self.dataset.segmentation[0].gene_expression.index, colors.rgba)
         )
