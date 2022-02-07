@@ -53,3 +53,13 @@ class colorObjectWidget(QWidget):
         self.viewer.layers["segmentation"].color = dict(
             zip(self.dataset.segmentation[0].gene_expression.index, colors.rgba)
         )
+
+
+class kajsasWidget(QWidget):
+    def __init__(self, dataset, viewer):
+        super().__init__()
+        self.dataset = dataset
+        self.viewer = viewer
+        self.initUI()
+
+    def initUI(self):
