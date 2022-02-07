@@ -1,5 +1,9 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QListWidget, QVBoxLayout, QHBoxLayout
+from configparser import MAX_INTERPOLATION_DEPTH
+from email.charset import QP
+from hashlib import sha1
+from PyQt5.QtWidgets import QWidget, QLabel, QListWidget, QVBoxLayout, QHBoxLayout, QPushButton
 from PyQt5.QtGui import QFont
+from matplotlib.pyplot import show
 
 
 h1 = QFont("Arial", 13)
@@ -63,3 +67,12 @@ class kajsasWidget(QWidget):
         self.initUI()
 
     def initUI(self):
+
+        self.label = QLabel(self)
+        self.label.setText("Choose files:")
+        self.label.setFont(h1)
+
+        # Tab 1.1
+        self.tab1_1 = QWidget()
+        self.tab1_1.layout = QVBoxLayout()
+        self.btn_print = QPushButton('Please select a nucleai image')
