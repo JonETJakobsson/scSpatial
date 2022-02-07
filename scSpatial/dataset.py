@@ -1,6 +1,5 @@
 # Class represening raw dataset
 from utility import select_file
-from segmentation import Segmentation
 import imageio
 import pandas as pd
 
@@ -20,7 +19,9 @@ class Dataset:
         # Create datastructures
         self.images = dict()
         self.gene_expression = None
-        self.segmentation = list() # Note, these are now added from the segmentation class
+
+        # Note, these are now added from the segmentation class
+        self.segmentation = list()
 
         # Add dataset to class dictionary
         self.all[name] = self
@@ -58,8 +59,10 @@ class Dataset:
 
         df = pd.read_csv(path)
 
-        # TODO Add interface to manually supply which columns that represent x, y and gene_name
-        # Currently this is hard coded bellow. We might want to add more columns such as confident scores etc
+        # TODO Add interface to manually supply which columns that represent
+        #  x, y and gene_name
+        # Currently this is hard coded bellow. We might want to add more
+        # columns such as confident scores etc
         # in the future
         df = df[["PosX", "PosY", "Gene"]]
         df.columns = ["x", "y", "gene"]

@@ -13,7 +13,8 @@ h1 = QFont("Arial", 13)
 
 
 class colorObjectWidget(QWidget):
-    """Widget used to color objects by different features (currently gene expression)"""
+    """Widget used to color objects by different features
+    (currently gene expression)"""
     def __init__(self, dataset, viewer):
         super().__init__()
         self.dataset = dataset
@@ -66,7 +67,10 @@ class colorObjectWidget(QWidget):
         cmap = Colormap(["b", "r"])
         colors = cmap[values]
         self.viewer.layers["segmentation"].color = dict(
-            zip(self.dataset.segmentation[0].gene_expression.index, colors.rgba)
+            zip(
+                self.dataset.segmentation[0].gene_expression.index,
+                colors.rgba
+            )
         )
         # Change blending to additive to allow black objects to disapear
         self.viewer.layers["segmentation"].blending = "additive"

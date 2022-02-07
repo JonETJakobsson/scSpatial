@@ -9,14 +9,13 @@ class Segmentation:
 
         methods:
         -------
-        self.run(Dataset): Runs the segmentation on the dataset. 
+        self.run(Dataset): Runs the segmentation on the dataset.
         and stores segmentation under self.objects
         """
 
     def run(self, dataset):
         """Segment image and return the segmentation object"""
         pass
-
 
     def map_genes(self, dataset):
         """map genes to segmented objects.
@@ -27,7 +26,13 @@ class Segmentation:
             gene_map.append((gene.gene, object_id, 1))
 
         df = pd.DataFrame(gene_map, columns=["gene", "object_id", "value"])
-        df = df.pivot_table(index="object_id", columns="gene", values="value", fill_value=0, aggfunc=sum)
+        df = df.pivot_table(
+            index="object_id",
+            columns="gene",
+            values="value",
+            fill_value=0,
+            aggfunc=sum
+        )
 
         # Store genes mapping to objects
         self.gene_expression = df.iloc[1:]
@@ -55,7 +60,7 @@ class SegmentNuclei(Segmentation):
         )
 
         self.objects = masks
-        
+
         dataset.segmentation.append(self)
 
 
@@ -88,5 +93,5 @@ class SegmentCytoplasm(Segmentation):
         )
 
         self.objects = masks
-        
+
         dataset.segmentation.append(self)
