@@ -36,7 +36,8 @@ class App:
         df = df.iloc[idx]
         df.x = df.x - 6000
         df.y = df.y - 5000
-        df
+        d1.gene_expression = df
+
         # Altering our cytoplasm and nuclei images to the same coordinates that we have in our gene list /KM
         d1.images["Cytoplasm"] = d1.images["Cytoplasm"][5000:6000, 6000:8000]
 
@@ -45,6 +46,9 @@ class App:
         # Running the segmentation process which is defined in the segmentation.py code, setting our own values /KM
         seg = SegmentCytoplasm(size=120, flow_threshold=0.4, mask_threshold=0)
         seg.run(d1)
+
+        # map genes for segmentation
+        seg.map_genes(d1)
 
         # Choosing Napari as the program we want to look in, labeling our axis, adding our images and assigning color to them. The genes are added as dots and the gene name is added as text /KM
         viewer = napari.Viewer(axis_labels=["Dorsoventral", "Mediolateral"])
@@ -58,6 +62,7 @@ class App:
 
         viewer.add_labels(d1.segmentation[0].objects)
         viewer.window.add_dock_widget(colorObjectWidget(d1, viewer))
+
         viewer.show()
         napari.run()
 

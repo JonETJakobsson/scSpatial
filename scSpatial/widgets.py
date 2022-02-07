@@ -10,35 +10,34 @@ class colorObjectWidget(QWidget):
         super().__init__()
         self.dataset = dataset
         self.viewer = viewer
-        self.initUI()        
-        
-        
+        self.initUI()
+
     def initUI(self):
-        
+
         self.label = QLabel(self)
         self.label.setText("Color objects by gene:")
         self.label.setFont(h1)
-        self.label.move(10,10)
-        
+        self.label.move(10, 10)
+
         self.listwidget = QListWidget(self)
-        self.listwidget.move(10,10)
-        for gene in self.dataset.gene_expression.index:
+        self.listwidget.move(10, 10)
+        for gene in self.dataset.segmentation[0].gene_expression.columns:
             self.listwidget.addItem(gene)
 
-        #Connect selection to action
+        # Connect selection to action
         self.listwidget.itemClicked.connect(self.geneIsSelected)
-        
+
         # Cosmetic layout of widget
         vbox = QVBoxLayout(self)
         vbox.addWidget(self.label)
         vbox.addWidget(self.listwidget)
-        #vbox.addStretch()
+        # vbox.addStretch()
         hbox = QHBoxLayout(self)
         hbox.addLayout(vbox)
         hbox.addStretch()
-        
+
         self.layout = hbox
-        
+
     def geneIsSelected(self, listItem):
         import numpy as np
         from sklearn.preprocessing import minmax_scale
@@ -48,6 +47,8 @@ class colorObjectWidget(QWidget):
         values = self.dataset.segmentation[0].gene_expression.loc[gene]
         values = np.log1p(values)
         values = minmax_scale(values)
-        cmap = Colormap(["b","r"])
+        cmap = Colormap(["b", "r"])
         colors = cmap[values]
-        self.viewer.layers["segmentation"].color = dict(zip(self.dataset.segmentation[0].gene_expression.columns, colors.rgba))
+        self.viewer.layers["segmentation"].color = dict(
+            zip(self.dataset.segmentation[0].gene_expression.columns, colors.rgba)
+        )
