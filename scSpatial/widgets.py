@@ -21,7 +21,8 @@ class colorObjectWidget(QWidget):
 
         self.listwidget = QListWidget(self)
         self.listwidget.move(10, 10)
-        for gene in self.dataset.segmentation[0].gene_expression.columns:
+        # fetch columns, note multi index with second value beeing gene
+        for _ , gene in self.dataset.segmentation[0].gene_expression.columns:
             self.listwidget.addItem(gene)
 
         # Connect selection to action

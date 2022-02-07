@@ -23,7 +23,7 @@ class Segmentation:
         return: gene expression matrix under self.gene_expression"""
         gene_map = list()
         for i, gene in dataset.gene_expression.iterrows():
-            object_id = self.objects[int(gene.x), int(gene.y)]
+            object_id = self.objects[int(gene.y), int(gene.x)]
             gene_map.append((gene.gene, object_id, 1))
 
         df = pd.DataFrame(gene_map, columns=["gene", "object_id", "value"])

@@ -32,8 +32,9 @@ class App:
             if gene.x > 6000 and gene.x <= 8000:
                 if gene.y > 5000 and gene.y <= 6000:
                     idx.append(i)
+                    
         # iloc lets us choose a specific location/cell in our list. Subtracting specific values from the X and Y coordinates /KM
-        df = df.iloc[idx]
+        df = df.iloc[idx].copy()
         df.x = df.x - 6000
         df.y = df.y - 5000
         d1.gene_expression = df
