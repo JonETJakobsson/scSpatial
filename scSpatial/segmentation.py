@@ -28,7 +28,11 @@ class Segmentation:
 
         df = pd.DataFrame(gene_map, columns=["gene", "object_id", "value"])
         df = df.pivot_table(index="object_id", columns="gene", values="value", fill_value=0, aggfunc=sum)
-        self.gene_expression = df
+
+        # Store genes mapping to objects
+        self.gene_expression = df.iloc[1:]
+        # Store genes mapping to background
+        self.background = df.iloc[0]
 
 
 class SegmentNuclei(Segmentation):

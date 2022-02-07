@@ -45,11 +45,11 @@ class App:
         d1.images["Nuclei"] = d1.images["Nuclei"][5000:6000, 6000:8000]
 
         # Running the segmentation process which is defined in the segmentation.py code, setting our own values /KM
-        # seg = SegmentCytoplasm(size=120, flow_threshold=0.4, mask_threshold=0)
-        # seg.run(d1)
+        seg = SegmentCytoplasm(size=120, flow_threshold=0.4, mask_threshold=0)
+        seg.run(d1)
 
         # map genes for segmentation
-        # seg.map_genes(d1)
+        seg.map_genes(d1)
 
         # Choosing Napari as the program we want to look in, labeling our axis, adding our images and assigning color to them. The genes are added as dots and the gene name is added as text /KM
         viewer = napari.Viewer(axis_labels=["Dorsoventral", "Mediolateral"])
@@ -61,8 +61,8 @@ class App:
 
         viewer.add_points(data=list(zip(df.y, df.x)), name="genes", properties=df, text="gene")
 
-        # viewer.add_labels(d1.segmentation[0].objects, name="segmentation")
-        viewer.window.add_dock_widget(kajsasWidget(d1, viewer))
+        viewer.add_labels(d1.segmentation[0].objects, name="segmentation")
+        viewer.window.add_dock_widget(colorObjectWidget(d1, viewer))
 
         viewer.show()
         napari.run()
