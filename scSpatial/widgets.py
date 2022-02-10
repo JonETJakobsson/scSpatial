@@ -1,7 +1,18 @@
+<<<<<<< HEAD
 from configparser import MAX_INTERPOLATION_DEPTH
 from email.charset import QP
 from hashlib import sha1
 from PyQt5.QtWidgets import QWidget, QLabel, QListWidget, QVBoxLayout, QHBoxLayout, QPushButton
+=======
+from PyQt5.QtWidgets import (
+    QWidget,
+    QLabel,
+    QListWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QPushButton,
+)
+>>>>>>> 69deff2d2cca285abea2989143da2ef6733a76d3
 from PyQt5.QtGui import QFont
 from matplotlib.pyplot import show
 
@@ -86,6 +97,7 @@ class kajsasWidget(QWidget):
         self.initUI()
 
     def initUI(self):
+<<<<<<< Updated upstream
 
         self.label = QLabel(self)
         self.label.setText("Choose files:")
@@ -95,3 +107,6 @@ class kajsasWidget(QWidget):
         self.tab1_1 = QWidget()
         self.tab1_1.layout = QVBoxLayout()
         self.btn_print = QPushButton('Please select a nucleai image')
+=======
+        pass
+>>>>>>> Stashed changes

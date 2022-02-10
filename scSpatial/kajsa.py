@@ -41,6 +41,37 @@ class kajsasWidget(QWidget):
         mainLayout.addWidget(self.tabs1, 0, 0)
         self.setLayout(mainLayout)
 
+        # Tab 2
+        self.tab2_1 = QWidget()
+        self.tab2_1.layout = QVBoxLayout()
+
+        self.btn_print = QPushButton('Please select a cytoplasm image')
+        self.tab2_1.layout.addWidget(self.btn_print)
+
+        self.tab2_1.setLayout(self.tab2_1.layout)
+
+
+        self.tabs2 = QTabWidget()
+        self.tabs2.addTab(self.tab2_1, 'Tab2')
+
+        mainLayout.addWidget(self.tabs2, 1, 0)
+        self.setLayout(mainLayout)
+
+        # Tab 3
+        self.tab3_1 = QWidget()
+        self.tab3_1.layout = QVBoxLayout()
+
+        self.btn_print = QPushButton('Please select a cytoplasm image')
+        self.tab3_1.layout.addWidget(self.btn_print)
+
+        self.tab3_1.setLayout(self.tab3_1.layout)
+
+
+        self.tabs3 = QTabWidget()
+        self.tabs3.addTab(self.tab3_1, 'Tab3')
+
+        mainLayout.addWidget(self.tabs3, 2, 0)
+        self.setLayout(mainLayout)
 
 app = QApplication(sys.argv)
 
