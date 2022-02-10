@@ -10,6 +10,8 @@ h1 = QFont("Arial", 13)
 
 
 class colorObjectWidget(QWidget):
+    """Widget used to color objects by different features
+    (currently gene expression)"""
     def __init__(self, dataset, viewer):
         super().__init__()
         self.dataset = dataset
@@ -23,19 +25,25 @@ class colorObjectWidget(QWidget):
         self.label.setFont(h1)
         self.label.move(10, 10)
 
+        # Gene selection list
         self.listwidget = QListWidget(self)
         self.listwidget.move(10, 10)
 
         for gene in self.dataset.segmentation[0].gene_expression.columns:
             self.listwidget.addItem(gene)
 
-        # Connect selection to action
-        self.listwidget.itemClicked.connect(self.geneIsSelected)
+        self.listwidget.itemClicked.connect(self.color_genes)
 
-        # Cosmetic layout of widget
+        # Reset button
+        self.reset_button = QPushButton(self)
+        self.reset_button.setText("Reset")
+        self.reset_button.clicked.connect(self.color_reset)
+
+        # Layout of widget
         vbox = QVBoxLayout(self)
         vbox.addWidget(self.label)
         vbox.addWidget(self.listwidget)
+        vbox.addWidget(self.reset_button)
         # vbox.addStretch()
         hbox = QHBoxLayout(self)
         hbox.addLayout(vbox)
@@ -43,7 +51,8 @@ class colorObjectWidget(QWidget):
 
         self.layout = hbox
 
-    def geneIsSelected(self, listItem):
+    def color_genes(self, listItem):
+        """Sets object color by selected gene"""
         import numpy as np
         from sklearn.preprocessing import minmax_scale
         from vispy.color.colormap import Colormap
@@ -55,8 +64,18 @@ class colorObjectWidget(QWidget):
         cmap = Colormap(["b", "r"])
         colors = cmap[values]
         self.viewer.layers["segmentation"].color = dict(
-            zip(self.dataset.segmentation[0].gene_expression.index, colors.rgba)
+            zip(
+                self.dataset.segmentation[0].gene_expression.index,
+                colors.rgba
+            )
         )
+        # Change blending to additive to allow black objects to disapear
+        self.viewer.layers["segmentation"].blending = "additive"
+
+    def color_reset(self):
+        """Reset object color to auto and translucent."""
+        self.viewer.layers["segmentation"].color_mode = "auto"
+        self.viewer.layers["segmentation"].blending = "translucent"
 
 
 class kajsasWidget(QWidget):
