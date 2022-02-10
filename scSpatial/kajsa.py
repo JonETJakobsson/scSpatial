@@ -1,9 +1,15 @@
 from configparser import MAX_INTERPOLATION_DEPTH
 from email.charset import QP
 from hashlib import sha1
+from os import getcwd
+import os
 import sys
-from PyQt5.QtWidgets import QWidget, QLabel, QListWidget, QVBoxLayout, QHBoxLayout, QPushButton, QApplication, QLineEdit, QTabWidget, QGridLayout, QVBoxLayout
+import this
+from tkinter import dialog
+from urllib import response
+from PyQt5.QtWidgets import QWidget, QLabel, QListWidget, QVBoxLayout, QHBoxLayout, QPushButton, QApplication, QLineEdit, QTabWidget, QGridLayout, QVBoxLayout, QFileDialog, QComboBox
 from PyQt5.QtGui import QFont
+from click import option
 from matplotlib.pyplot import show
 
 h1 = QFont("Arial", 13)
@@ -11,7 +17,7 @@ h1 = QFont("Arial", 13)
 class kajsasWidget(QWidget):
     def __init__(self):
         super().__init__()
-        self.resize(800, 600)
+        self.resize(500, 200)
 # self.dataset = dataset
 # self.viewer = viewer
         self.initUI()
@@ -19,59 +25,49 @@ class kajsasWidget(QWidget):
     def initUI(self):
 
         self.label = QLabel(self)
-        self.label.setText("Select files:")
+        self.label.setText("Select file from drop down menu:") #Kan jag fixa så detta får plats?
         self.label.setFont(h1)
         
         mainLayout = QGridLayout()
        
+        # Test file dialog
+        layout = QVBoxLayout()
+        self.setLayout(layout)
 
-        # Tab 1
-        self.tab1_1 = QWidget()
-        self.tab1_1.layout = QVBoxLayout()
+        self.options = ('Select a nuclei image', 'Select a cytoplasm image', 'Select a gene expression file')
 
-        self.btn_print = QPushButton('Please select a nuclei image')
-        self.tab1_1.layout.addWidget(self.btn_print)
+        self.combo = QComboBox()
+        self.combo.addItems(self.options)
+        layout.addWidget(self.combo)
 
-        self.tab1_1.setLayout(self.tab1_1.layout)
+        btn = QPushButton('Load')
+        btn.clicked.connect(self.launchDialog)
+        layout.addWidget(btn)
 
+    def launchDialog(self):
+        option = self.options.index(self.combo.currentText())
 
-        self.tabs1 = QTabWidget()
-        self.tabs1.addTab(self.tab1_1, 'Tab1')
+        if option == 0:
+            response = self.SelectaNucleiImage()
+        elif option == 1:
+            response = self.SelectaCytoplasmImage()
+        elif option == 2:
+            option = self.SelectaGeneExpressionFile()
+        else:
+            print('Got nothing')
+    
+    def SelectaNucleiImage(self):
 
-        mainLayout.addWidget(self.tabs1, 0, 0)
-        self.setLayout(mainLayout)
+        response = QFileDialog.getOpenFileName(
+            parent=self,
+            caption='Please select a nuclei image',
+            directory=os.getcwd()
+            #Jag kan lägga till filter på vad för sorts filer som kan användas
+        
+        )
 
-        # Tab 2
-        self.tab2_1 = QWidget()
-        self.tab2_1.layout = QVBoxLayout()
-
-        self.btn_print = QPushButton('Please select a cytoplasm image')
-        self.tab2_1.layout.addWidget(self.btn_print)
-
-        self.tab2_1.setLayout(self.tab2_1.layout)
-
-
-        self.tabs2 = QTabWidget()
-        self.tabs2.addTab(self.tab2_1, 'Tab2')
-
-        mainLayout.addWidget(self.tabs2, 1, 0)
-        self.setLayout(mainLayout)
-
-        # Tab 3
-        self.tab3_1 = QWidget()
-        self.tab3_1.layout = QVBoxLayout()
-
-        self.btn_print = QPushButton('Please select a cytoplasm image')
-        self.tab3_1.layout.addWidget(self.btn_print)
-
-        self.tab3_1.setLayout(self.tab3_1.layout)
-
-
-        self.tabs3 = QTabWidget()
-        self.tabs3.addTab(self.tab3_1, 'Tab3')
-
-        mainLayout.addWidget(self.tabs3, 2, 0)
-        self.setLayout(mainLayout)
+        print(response)
+        return response [0]
 
 app = QApplication(sys.argv)
 
