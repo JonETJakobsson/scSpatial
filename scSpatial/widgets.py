@@ -5,17 +5,50 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QPushButton,
+    QComboBox,
+    QFormLayout,
 )
 from PyQt5.QtGui import QFont
-from matplotlib.pyplot import show
 
 
 h1 = QFont("Arial", 13)
 
 
+class geneColumnSelectWidget(QWidget):
+    def __init__(self, dataset, viewer):
+        super().__init__()
+        self.dataset = dataset
+        self.viewer = viewer
+        self.initUI()
+
+    def initUI(self):
+        columns = ["x", "y", "other", "gene"]
+
+        self.list_x = QComboBox()
+        self.list_x.addItems(columns)
+        self.list_y = QComboBox()
+        self.list_y.addItems(columns)
+        self.list_gene = QComboBox()
+        self.list_gene.addItems(columns)
+
+        layout = QFormLayout()
+        layout.addRow("x", self.list_x)
+        layout.addRow("y", self.list_y)
+        layout.addRow("gene", self.list_gene)
+        btn = QPushButton("Execute")
+        btn.clicked.connect(self.print_selection)
+        layout.addWidget(btn)
+
+        self.setLayout(layout)
+
+    def print_selection(self):
+        print(self.list_x.currentText())
+
+
 class colorObjectWidget(QWidget):
     """Widget used to color objects by different features
     (currently gene expression)"""
+
     def __init__(self, dataset, viewer):
         super().__init__()
         self.dataset = dataset
@@ -80,14 +113,3 @@ class colorObjectWidget(QWidget):
         """Reset object color to auto and translucent."""
         self.viewer.layers["segmentation"].color_mode = "auto"
         self.viewer.layers["segmentation"].blending = "translucent"
-
-
-class kajsasWidget(QWidget):
-    def __init__(self, dataset, viewer):
-        super().__init__()
-        self.dataset = dataset
-        self.viewer = viewer
-        self.initUI()
-
-    def initUI(self):
-        pass
