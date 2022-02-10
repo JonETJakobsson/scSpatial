@@ -2,7 +2,7 @@ from configparser import MAX_INTERPOLATION_DEPTH
 from email.charset import QP
 from hashlib import sha1
 import sys
-from PyQt5.QtWidgets import QWidget, QLabel, QListWidget, QVBoxLayout, QHBoxLayout, QPushButton, QApplication, QLineEdit, QTabWidget, QGridLayout, QVBoxLayout
+from PyQt5.QtWidgets import QWidget, QLabel, QComboBox, QListWidget, QFormLayout, QVBoxLayout, QHBoxLayout, QPushButton, QApplication, QLineEdit, QTabWidget, QGridLayout, QSpinBox
 from PyQt5.QtGui import QFont
 from matplotlib.pyplot import show
 
@@ -18,31 +18,27 @@ class selectColumnsWidget(QWidget):
 
     def initUI(self):
         columns = ["x", "y", "other", "gene"]
-        label_x = QLabel("x")
-        label_y = QLabel("y")
-        label_gene = QLabel("gene")
-        list_x = QListWidget()
-        list_x.addItems(columns)
-        list_y = QListWidget()
-        list_y.addItems(columns)
-        list_gene = QListWidget()
-        list_gene.addItems(columns)
+            
+        self.list_x = QComboBox()
+        self.list_x.addItems(columns)
+        self.list_y = QComboBox()
+        self.list_y.addItems(columns)
+        self.list_gene = QComboBox()
+        self.list_gene.addItems(columns)
 
-        label_layout = QHBoxLayout()
-        label_layout.addWidget(label_x)
-        label_layout.addWidget(label_y)
-        label_layout.addWidget(label_gene)
-
-        list_layout = QHBoxLayout()
-        list_layout.addWidget(list_x)
-        list_layout.addWidget(list_y)
-        list_layout.addWidget(list_gene)
-
-        layout = QVBoxLayout()
-        layout.addLayout(label_layout)
-        layout.addLayout(list_layout)
+        layout = QFormLayout()
+        layout.addRow("x", self.list_x)
+        layout.addRow("y", self.list_y)
+        layout.addRow("gene", self.list_gene)
+        btn = QPushButton("Execute")
+        btn.clicked.connect(self.print_selection)
+        layout.addWidget(btn)
 
         self.setLayout(layout)
+
+    def print_selection(self):
+        print(self.list_x.currentText())
+
 app = QApplication(sys.argv)
 
 demo = selectColumnsWidget()
