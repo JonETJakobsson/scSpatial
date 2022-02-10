@@ -27,8 +27,6 @@ class kajsasWidget(QWidget):
         self.label = QLabel(self)
         self.label.setText("Select file from drop down menu:") #Kan jag fixa så detta får plats?
         self.label.setFont(h1)
-        
-        mainLayout = QGridLayout()
        
         # Test file dialog
         layout = QVBoxLayout()
@@ -62,13 +60,30 @@ class kajsasWidget(QWidget):
             parent=self,
             caption='Please select a nuclei image',
             directory=os.getcwd()
-            #Jag kan lägga till filter på vad för sorts filer som kan användas
         
         )
-
         print(response)
-        return response [0]
 
+    def SelectaCytoplasmImage(self):
+
+        response = QFileDialog.getOpenFileName(
+            parent=self,
+            caption='Please select a cytoplasm image',
+            directory=os.getcwd()
+        
+        )
+        print(response)
+
+    def SelectaGeneExpressionFile(self):
+
+        response = QFileDialog.getOpenFileName(
+            parent=self,
+            caption='Please select a gene expression file',
+            directory=os.getcwd()
+        
+        )
+        print(response)
+    
 app = QApplication(sys.argv)
 
 demo = kajsasWidget()
