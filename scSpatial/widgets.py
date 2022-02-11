@@ -7,8 +7,12 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QComboBox,
     QFormLayout,
+    QApplication,
+    QFileDialog
 )
 from PyQt5.QtGui import QFont
+import sys
+import os
 
 
 h1 = QFont("Arial", 13)
@@ -22,6 +26,10 @@ class geneColumnSelectWidget(QWidget):
         self.initUI()
 
     def initUI(self):
+
+        btn = QPushButton("select gene expression file")
+        btn.clicked.connect(self.load_df)
+
         columns = ["x", "y", "other", "gene"]
 
         self.list_x = QComboBox()
@@ -32,17 +40,22 @@ class geneColumnSelectWidget(QWidget):
         self.list_gene.addItems(columns)
 
         layout = QFormLayout()
+        layout.addWidget(btn)
         layout.addRow("x", self.list_x)
         layout.addRow("y", self.list_y)
         layout.addRow("gene", self.list_gene)
-        btn = QPushButton("Execute")
-        btn.clicked.connect(self.print_selection)
         layout.addWidget(btn)
 
         self.setLayout(layout)
 
-    def print_selection(self):
-        print(self.list_x.currentText())
+    def load_df(self):
+        import pandas as pd
+        path = QFileDialog.getOpenFileName(
+            self,
+            caption="select a gene expression file")
+        self.df = pd.read_csv(path)
+        print(self.df)
+
 
 
 class colorObjectWidget(QWidget):
@@ -113,3 +126,11 @@ class colorObjectWidget(QWidget):
         """Reset object color to auto and translucent."""
         self.viewer.layers["segmentation"].color_mode = "auto"
         self.viewer.layers["segmentation"].blending = "translucent"
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+
+    demo = geneColumnSelectWidget("dataset", "viewer")
+    demo.show()
+
+    sys.exit(app.exec_())

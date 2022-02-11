@@ -25,13 +25,7 @@ class mainWidget(QWidget):
         # Create tabs with names to access induvidual widgets
         self.tabs = QTabWidget()
         # self.tabs.addTab(kajsasWidget, "kajsa")
-        self.tabs.addTab(
-            geneColumnSelectWidget(self.dataset, self.viewer), "select columns"
-        )
-        self.tabs.addTab(
-            colorObjectWidget(self.dataset, self.viewer),
-            "Color objects"
-        )
+        self.tabs.addTab(geneColumnSelectWidget(self.dataset, self.viewer), "select columns")
 
         # Add all widgets in order
         layout.addWidget(self.tabs)
