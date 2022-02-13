@@ -97,6 +97,9 @@ class loadGenesWidget(QWidget):
         # Rename columns to standardized names
         self.df.columns = ["x", "y", "gene"]
 
+        #Set gene column as category
+        self.df.gene = self.df.gene.astype("category")
+
         # Save gene expression to the dataset
         self.dataset.gene_expression = self.df
 
@@ -106,15 +109,34 @@ class loadGenesWidget(QWidget):
         # TODO I would like to see all functions adding data to the viewer 
         # somewhere else (together), as it makes it easier to change the apearance of the app
         # Now we have to look through random widgets to change these things.
+        from vispy.color.colormap import get_colormap
+
+        cm = get_colormap("gist_rainbow")
+        codes = self.dataset.gene_expression.gene.cat.codes
+        colors = cm.map(codes/max(codes))
+        # color_map = dict(zip(self.dataset.gene_expression.gene.cat.categories, normalized_codes))
+        # colors = list(self.dataset.gene_expression.gene.map(color_map))
+        text_property = {
+            "text": "{gene}",
+            "size": 12,
+            "color": "white",
+            "translation": (-3,0),
+            "visible": False
+        }
         self.viewer.add_points(
             data=list(zip(
                 self.dataset.gene_expression.x,
                 self.dataset.gene_expression.y
             )),
             properties=self.dataset.gene_expression,
-            text="gene",
             name="Genes",
+            text=text_property,
+            face_color=colors
         )
+
+
+        
+        
 
 
 
