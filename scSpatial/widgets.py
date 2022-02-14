@@ -136,10 +136,39 @@ class loadGenesWidget(QWidget):
 
 
         
-        
+class segmentationWidget(QWidget):
+    def __init__(self, dataset: Dataset, viewer: Viewer):
+        super().__init__()
+        self.dataset = dataset
+        self.viewer = viewer
+        self.initUI()
 
+    def initUI(self):
+        self.main_layout = QVBoxLayout(self)
+        self.selection_layout = QVBoxLayout(self)
+        self.option_layout = QFormLayout(self)
 
+        method_label = QLabel("Segmentation method")
+        self.selection_layout.addWidget(method_label)
 
+        self.method_combo = QComboBox(self)
+        self.method_combo.setPlaceholderText("select method")
+        self.method_combo.addItems([
+            "Cellpose - Nuclei",
+            "Cellpose - Cytoplasm",
+            "External"
+            ]
+        )
+        self.method_combo.currentTextChanged.connect(self.create_option_widget)
+
+        self.selection_layout.addWidget(self.method_combo)
+
+        self.main_layout.addLayout(self.selection_layout)
+        self.main_layout.addLayout(self.option_layout)
+        self.setLayout(self.main_layout)
+
+    def create_option_widget(self):
+        print(self.method_combo.currentText())
 
 class colorObjectWidget(QWidget):
     """Widget used to color objects by different features
@@ -213,7 +242,7 @@ class colorObjectWidget(QWidget):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    demo = geneColumnSelectWidget("dataset", "viewer")
+    demo = segmentationWidget("dataset", "viewer")
     demo.show()
 
     sys.exit(app.exec_())
