@@ -17,6 +17,7 @@ import sys
 
 from pydantic import NoneBytes, NoneIsAllowedError
 from dataset import Dataset
+from segmentation import SegmentCytoplasm, SegmentNuclei
 from napari import Viewer
 
 
@@ -49,7 +50,7 @@ class loadImageWidget(QWidget):
 
     def initUI(self):
         
-        layout = QGridLayout(self)
+        layout = QGridLayout()
         layout.setColumnMinimumWidth(1, 100)
         
         btn_nuclei = QPushButton('Select a nuclei image')
@@ -241,14 +242,14 @@ class segmentationWidget(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.main_layout = QVBoxLayout(self)
-        self.selection_layout = QVBoxLayout(self)
-        self.option_layout = QFormLayout(self)
+        self.main_layout = QVBoxLayout()
+        self.selection_layout = QVBoxLayout()
+        self.option_layout = QFormLayout()
 
         method_label = QLabel("Segmentation method")
         self.selection_layout.addWidget(method_label)
 
-        self.method_combo = QComboBox(self)
+        self.method_combo = QComboBox()
         self.method_combo.addItems([
             "select method",
             "Cellpose - Nuclei",
@@ -262,10 +263,15 @@ class segmentationWidget(QWidget):
 
         self.main_layout.addLayout(self.selection_layout)
         self.main_layout.addLayout(self.option_layout)
+        
         self.setLayout(self.main_layout)
 
     def create_option_widget(self):
-        print(self.method_combo.currentText())
+        option = self.method_combo.currentText()
+        if option == "Cellpose - Nuclei":
+            pass
+        pass            
+            
 
 class colorObjectWidget(QWidget):
     """Widget used to color objects by different features
