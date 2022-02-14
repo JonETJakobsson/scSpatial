@@ -10,12 +10,14 @@ from PyQt5.QtWidgets import (
     QFormLayout,
     QApplication,
     QFileDialog,
-    QGridLayout
+    QGridLayout,
+    QSlider,
 )
+from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 import sys
+import magicgui.widgets as magicWidget
 
-from pydantic import NoneBytes, NoneIsAllowedError
 from dataset import Dataset
 from segmentation import SegmentCytoplasm, SegmentNuclei
 from napari import Viewer
@@ -269,8 +271,46 @@ class segmentationWidget(QWidget):
     def create_option_widget(self):
         option = self.method_combo.currentText()
         if option == "Cellpose - Nuclei":
-            pass
-        pass            
+            h_layout = QHBoxLayout()
+            self.sldr_size = QSlider(Qt.Horizontal)
+            self.sldr_size.setMinimum(0)
+            self.sldr_size.setMaximum(100)
+            self.sldr_size.setValue(70)
+            self.sldr_size.valueChanged.connect(self.size_value_change)
+            self.lbl_size = QLabel("")
+            self.lbl_size.setText(str(self.sldr_size.value()))
+            h_layout.addWidget(self.sldr_size)
+            h_layout.addWidget(self.lbl_size)
+            self.option_layout.addRow("Size of nuclei", h_layout)
+
+            self.sldr_flow_th = QSlider(Qt.Horizontal)
+            self.sldr_flow_th.setMinimum(0)
+            self.sldr_flow_th.setMaximum(100)
+            self.sldr_flow_th.setValue(40)
+            self.option_layout.addRow("Flow threshold", self.sldr_flow_th)
+
+            self.sldr_mask_th = magicWidget.Slider(
+                orientation="horisontal",
+                readout=True,
+                min=-6,
+                max=6,
+                value=0
+                )
+            self.option_layout.addRow("Mask threshold", self.sldr_mask_th)
+
+            btn_run = QPushButton("Run")
+            btn_run.clicked.connect(self.run_segmentation_nuclei)
+
+    def size_value_change(self, value):
+        self.lbl_size.setText(str(value))
+
+    def run_segmentation_nuclei(self):
+        size = self.sldr_size.value()
+        f_th = self.sldr_flow_th.value()
+        m_th = self.sldr_mask_th.value()
+        seg = SegmentNuclei(size, f_th, m_th)
+        #seg.run(self.dataset)
+          
             
 
 class colorObjectWidget(QWidget):
