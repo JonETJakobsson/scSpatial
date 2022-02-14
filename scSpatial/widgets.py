@@ -108,12 +108,15 @@ class loadImageWidget(QWidget):
         self.btn_load.setVisible(False)
         if self.nuclei_path:
             self.dataset.load_nuclei(self.nuclei_path)
+            self.viewer.add_image(self.dataset.images["Nuclei"], name="Nuclei", colormap="yellow")
         
         if self.cytoplasm_path:
             self.dataset.load_cytoplasm(self.cytoplasm_path)
+            self.viewer.add_image(self.dataset.images["Cytoplasm"], name="Cytoplasm", colormap="cyan")
         
         if self.other_path:
             self.dataset.load_other_channel(path=self.other_path)
+            self.viewer.add_image(self.dataset.images["Other"], name="Other", colormap="magenta")
 
 class loadGenesWidget(QWidget):
     def __init__(self, dataset: Dataset, viewer: Viewer):
@@ -220,8 +223,8 @@ class loadGenesWidget(QWidget):
         }
         self.viewer.add_points(
             data=list(zip(
-                self.dataset.gene_expression.x,
-                self.dataset.gene_expression.y
+                self.dataset.gene_expression.y,
+                self.dataset.gene_expression.x
             )),
             properties=self.dataset.gene_expression,
             name="Genes",
