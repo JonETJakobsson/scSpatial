@@ -9,16 +9,111 @@ from PyQt5.QtWidgets import (
     QComboBox,
     QFormLayout,
     QApplication,
-    QFileDialog
+    QFileDialog,
+    QGridLayout
 )
 from PyQt5.QtGui import QFont
 import sys
+
+from pydantic import NoneBytes, NoneIsAllowedError
 from dataset import Dataset
 from napari import Viewer
 
 
 h1 = QFont("Arial", 13)
 
+class loadWidget(QWidget):
+    def __init__(self, dataset: Dataset, viewer: Viewer):
+        super().__init__()
+        self.dataset = dataset
+        self.viewer = viewer
+        self.initUI()
+
+    def initUI(self):
+        layout = QVBoxLayout(self)
+        layout.addWidget(loadImageWidget(self.dataset, self.viewer))
+        layout.addWidget(loadGenesWidget(self.dataset, self.viewer))
+        self.setLayout(layout)
+
+class loadImageWidget(QWidget):
+    def __init__(self, dataset: Dataset, viewer: Viewer):
+        super().__init__()
+        self.dataset = dataset
+        self.viewer = viewer
+        self.nuclei_path = None
+        self.cytoplasm_path = None
+        self.other_path = None
+        self.initUI()
+
+    def initUI(self):
+        
+        layout = QGridLayout(self)
+        layout.setColumnMinimumWidth(1, 100)
+        
+        btn_nuclei = QPushButton('Select a nuclei image')
+        btn_nuclei.clicked.connect(self.launchNucleiDialog)
+        layout.addWidget(btn_nuclei, 0, 0)
+
+        btn_cytoplasm = QPushButton('Select a cytoplasm image')
+        btn_cytoplasm.clicked.connect(self.launchCytoplasmDialog)
+        layout.addWidget(btn_cytoplasm, 1, 0)
+
+        btn_other = QPushButton('Other channel')
+        btn_other.clicked.connect(self.launchOtherDialog)
+        layout.addWidget(btn_other, 2, 0)
+        
+        self.label_nuc = QLabel("")
+        layout.addWidget(self.label_nuc, 0, 1)
+
+        self.label_cyto = QLabel("")
+        layout.addWidget(self.label_cyto, 1, 1)
+
+        self.label_other = QLabel("")
+        layout.addWidget(self.label_other, 2, 1)
+
+        self.btn_load = QPushButton("Load images")
+        self.btn_load.clicked.connect(self.load_images)
+        layout.addWidget(self.btn_load, 3, 0, 1, 2)
+
+        self.setLayout(layout)
+
+    def launchNucleiDialog(self):
+        
+        path = QFileDialog.getOpenFileName(self, 'Select a nuclei image', '')[0]
+        self.nuclei_path = path
+        fname = path.split("/")[-1]
+
+        if path:
+            self.label_nuc.setText(fname)
+
+    def launchCytoplasmDialog(self):
+        
+        path = QFileDialog.getOpenFileName(self, 'Select a cytoplasm image', '')[0]
+        self.cytoplasm_path = path
+        fname = path.split("/")[-1]
+
+        if path:
+            self.label_cyto.setText(fname)
+
+    def launchOtherDialog(self):
+        
+        path = QFileDialog.getOpenFileName(self, 'Select other channel', '')[0]
+        self.other_path = path
+        fname = path.split("/")[-1]
+
+        if path:
+            self.label_other.setText(fname)
+
+    def load_images(self):
+        self.btn_load.setVisible(False)
+        if self.nuclei_path:
+            self.dataset.load_nuclei(self.nuclei_path)
+        
+        if self.cytoplasm_path:
+            self.dataset.load_cytoplasm(self.cytoplasm_path)
+        
+        if self.other_path:
+            self.dataset.load_other_channel(path=self.other_path)
 
 class loadGenesWidget(QWidget):
     def __init__(self, dataset: Dataset, viewer: Viewer):
@@ -133,8 +228,6 @@ class loadGenesWidget(QWidget):
             text=text_property,
             face_color=colors
         )
-
-
         
 class segmentationWidget(QWidget):
     def __init__(self, dataset: Dataset, viewer: Viewer):
@@ -152,8 +245,8 @@ class segmentationWidget(QWidget):
         self.selection_layout.addWidget(method_label)
 
         self.method_combo = QComboBox(self)
-        self.method_combo.setPlaceholderText("select method")
         self.method_combo.addItems([
+            "select method",
             "Cellpose - Nuclei",
             "Cellpose - Cytoplasm",
             "External"
@@ -239,10 +332,11 @@ class colorObjectWidget(QWidget):
         self.viewer.layers["segmentation"].color_mode = "auto"
         self.viewer.layers["segmentation"].blending = "translucent"
 
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    demo = segmentationWidget("dataset", "viewer")
+    demo = loadImageWidget("dataset", "viewer")
     demo.show()
 
     sys.exit(app.exec_())

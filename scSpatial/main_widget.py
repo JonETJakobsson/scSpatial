@@ -1,7 +1,7 @@
 import sys
 from PyQt5.QtWidgets import QWidget, QTabWidget, QApplication, QVBoxLayout
 from PyQt5.QtGui import QFont
-from widgets import loadGenesWidget
+from widgets import loadWidget
 from dataset import Dataset
 from napari import Viewer
 
@@ -24,7 +24,7 @@ class mainWidget(QWidget):
 
         # Create tabs with names to access induvidual widgets
         self.tabs = QTabWidget()
-        self.tabs.addTab(loadGenesWidget(self.dataset, self.viewer), "select columns")
+        self.tabs.addTab(loadWidget(self.dataset, self.viewer), "Load Data")
 
         # Add all widgets in order
         layout.addWidget(self.tabs)
