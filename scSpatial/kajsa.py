@@ -24,11 +24,13 @@ class kajsasWidget(QWidget):
     def initUI(self):
         
         layout = QFormLayout()
-        self.setLayout(layout)
+        
 
         btn_nuclei = QPushButton('Select a nuclei image')
         btn_nuclei.clicked.connect(self.launchNucleiDialog)
         layout.addWidget(btn_nuclei)
+        self.label_nuc = QLabel("Please select nuclei file")
+        layout.addWidget(self.label_nuc)
 
         btn_cytoplasm = QPushButton('Select a cytoplasm image')
         btn_cytoplasm.clicked.connect(self.launchCytoplasmDialog)
@@ -38,14 +40,17 @@ class kajsasWidget(QWidget):
         btn_other.clicked.connect(self.launchOtherDialog)
         layout.addWidget(btn_other)
 
-        self.label = QLabel(self)
+        self.label = QLabel("Please select a file")
+        layout.addWidget(self.label)
+
+        self.setLayout(layout)
 
     def launchNucleiDialog(self):
         
         fname = QFileDialog.getOpenFileName(self, 'Select a nuclei image', '')
 
         if fname:
-            self.label.setText(fname[0])
+            self.label_nuc.setText(fname[0])
 
     def launchCytoplasmDialog(self):
         
