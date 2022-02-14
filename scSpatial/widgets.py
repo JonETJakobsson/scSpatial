@@ -289,20 +289,23 @@ class segmentationWidget(QWidget):
             self.sldr_flow_th.setValue(40)
             self.option_layout.addRow("Flow threshold", self.sldr_flow_th)
 
-            self.sldr_mask_th = magicWidget.Slider(
-                orientation="horisontal",
-                readout=True,
-                min=-6,
-                max=6,
-                value=0
-                )
-            self.option_layout.addRow("Mask threshold", self.sldr_mask_th)
+            
+
+            btn_run_test = QPushButton("Test run")
+            btn_run_test.clicked.connect(self.run_segmentation_nuclei_test)
 
             btn_run = QPushButton("Run")
             btn_run.clicked.connect(self.run_segmentation_nuclei)
 
+            self.option_layout.addWidget(btn_run_test)
+            self.option_layout.addWidget(btn_run)
+
     def size_value_change(self, value):
         self.lbl_size.setText(str(value))
+
+    def run_segmentation_nuclei_test(self):
+        _, y, x = self.viewer.camera.center
+        print(x, y)
 
     def run_segmentation_nuclei(self):
         size = self.sldr_size.value()
