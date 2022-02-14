@@ -23,6 +23,7 @@ from napari import Viewer
 h1 = QFont("Arial", 13)
 
 class loadWidget(QWidget):
+    """Widget holding all widgets used for loading data"""
     def __init__(self, dataset: Dataset, viewer: Viewer):
         super().__init__()
         self.dataset = dataset
@@ -36,6 +37,7 @@ class loadWidget(QWidget):
         self.setLayout(layout)
 
 class loadImageWidget(QWidget):
+    """Widget used for loading images"""
     def __init__(self, dataset: Dataset, viewer: Viewer):
         super().__init__()
         self.dataset = dataset
@@ -78,7 +80,6 @@ class loadImageWidget(QWidget):
         self.setLayout(layout)
 
     def launchNucleiDialog(self):
-        
         path = QFileDialog.getOpenFileName(self, 'Select a nuclei image', '')[0]
         self.nuclei_path = path
         fname = path.split("/")[-1]
@@ -87,7 +88,6 @@ class loadImageWidget(QWidget):
             self.label_nuc.setText(fname)
 
     def launchCytoplasmDialog(self):
-        
         path = QFileDialog.getOpenFileName(self, 'Select a cytoplasm image', '')[0]
         self.cytoplasm_path = path
         fname = path.split("/")[-1]
@@ -96,7 +96,6 @@ class loadImageWidget(QWidget):
             self.label_cyto.setText(fname)
 
     def launchOtherDialog(self):
-        
         path = QFileDialog.getOpenFileName(self, 'Select other channel', '')[0]
         self.other_path = path
         fname = path.split("/")[-1]
@@ -119,6 +118,7 @@ class loadImageWidget(QWidget):
             self.viewer.add_image(self.dataset.images["Other"], name="Other", colormap="magenta")
 
 class loadGenesWidget(QWidget):
+    """Widget used for loading gene expression file"""
     def __init__(self, dataset: Dataset, viewer: Viewer):
         super().__init__()
         self.dataset = dataset
@@ -233,6 +233,7 @@ class loadGenesWidget(QWidget):
         )
         
 class segmentationWidget(QWidget):
+    """Widget used to run segmentation of the dataset"""
     def __init__(self, dataset: Dataset, viewer: Viewer):
         super().__init__()
         self.dataset = dataset
@@ -274,7 +275,8 @@ class colorObjectWidget(QWidget):
         super().__init__()
         self.dataset = dataset
         self.viewer = viewer
-        self.initUI()
+        if len(self.dataset.segmentation) > 0:
+            self.initUI()
 
     def initUI(self):
 

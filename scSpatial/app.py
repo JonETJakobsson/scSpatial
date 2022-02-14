@@ -19,7 +19,7 @@ class App:
         viewer = napari.Viewer(axis_labels=["Dorsoventral", "Mediolateral"])
 
         # Load the docked widget and pass in the dataset and viewer
-        viewer.window.add_dock_widget(mainWidget(dataset, viewer), name="scSpatial")
+        viewer.window.add_dock_widget(mainWidget(dataset, viewer), name="scSpatial", add_vertical_stretch=False)
 
         viewer.show()
         napari.run()
