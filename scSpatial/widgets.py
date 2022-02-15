@@ -19,8 +19,10 @@ import sys
 import magicgui.widgets as magicWidget
 
 from dataset import Dataset
-from segmentation import segmentCytoplasm, segmentNuclei
+
+from segmentation import segmentCytoplasm, segmentNuclei, Segmentation
 from napari import Viewer
+import imageio
 
 
 h1 = QFont("Arial", 13)
@@ -269,6 +271,12 @@ class segmentationWidget(QWidget):
         self.setLayout(self.main_layout)
 
     def create_option_widget(self):
+        # Clear option_layout if rows exists
+        if self.option_layout.rowCount() > 0:
+            for _ in range(self.option_layout.rowCount()):
+                self.option_layout.removeRow(0)
+
+
         option = self.method_combo.currentText()
         if option == "Cellpose - Nuclei" or option == "Cellpose - Cytoplasm":
             h1_layout = QHBoxLayout()
@@ -291,18 +299,18 @@ class segmentationWidget(QWidget):
             self.sldr_flow_th.setValue(40)
             self.sldr_flow_th.valueChanged.connect(self.value_change)
             self.lbl_flow_th = QLabel("")
-            self.lbl_flow_th.setText(str(self.sldr_flow_th.value()))
+            self.lbl_flow_th.setText(str(self.sldr_flow_th.value()/100))
             h2_layout.addWidget(self.sldr_flow_th)
             h2_layout.addWidget(self.lbl_flow_th)
             self.option_layout.addRow("Flow threshold", h2_layout)
 
             h3_layout = QHBoxLayout()
             self.sldr_mask_th = QSlider(Qt.Horizontal)
-            self.sldr_mask_th.setRange(0, 1)
-            self.sldr_mask_th.setValue(0)
+            self.sldr_mask_th.setRange(0, 120)
+            self.sldr_mask_th.setValue(60)
             self.sldr_mask_th.valueChanged.connect(self.value_change)
             self.lbl_mask_th = QLabel("")
-            self.lbl_mask_th.setText(str(self.sldr_mask_th.value()))
+            self.lbl_mask_th.setText(str((self.sldr_mask_th.value()-60)/10))
             h3_layout.addWidget(self.sldr_mask_th)
             h3_layout.addWidget(self.lbl_mask_th)
             self.option_layout.addRow("Mask threshold", h3_layout)
@@ -315,41 +323,70 @@ class segmentationWidget(QWidget):
 
             self.option_layout.addWidget(btn_run_test)
             self.option_layout.addWidget(btn_run)
+        
+        if option == "External":
+            btn_load_segmentation = QPushButton("Load segmentation file")
+            btn_load_segmentation.clicked.connect(self.load_segmentation_file)
+            self.option_layout.addWidget(btn_load_segmentation)
 
     def value_change(self, value):
         if self.sender() == self.sldr_size:
             self.lbl_size.setText(str(value))
 
         elif self.sender() == self.sldr_flow_th:
-            self.lbl_flow_th.setText(str(value))
+            self.lbl_flow_th.setText(str(value/100))
 
         elif self.sender() == self.sldr_mask_th:
+            value = (value-60)/10
             self.lbl_mask_th.setText(str(value))
 
+    def load_segmentation_file(self):
+        path = QFileDialog.getOpenFileName(
+            self,
+            caption="select a segmentation file"
+        )[0]
+        masks = imageio.imread(path)
+        seg = Segmentation()
+        seg.objects = masks
+
+        self.dataset.segmentation.append(seg)
 
     def run_segmentation_test(self):
         _, y, x = self.viewer.camera.center
-        crop = self.dataset.crop(center=(x, y))
+        crop = self.dataset.crop(center=(y, x))
+
+        size = int(self.lbl_size.text())
+        f_th = float(self.lbl_flow_th.text())
+        m_th = float(self.lbl_mask_th.text())
 
         if self.method_combo.currentText() == "Cellpose - Nuclei":
-            seg = segmentNuclei()
+            seg = segmentNuclei(size=size, flow_threshold=f_th, mask_threshold=m_th)
         if self.method_combo.currentText() == "Cellpose - Cytoplasm":
-            seg = segmentCytoplasm()
-            seg.run(crop)
-            self.viewer.add_labels(
-                crop.segmentation[-1].objects,
-                translate=crop.translate,
-                name=f"specific settings..."
-            )
+            seg = segmentCytoplasm(size=size, flow_threshold=f_th, mask_threshold=m_th)
+
+        seg.run(crop)
+        self.viewer.add_labels(
+            crop.segmentation[-1].objects,
+            translate=crop.translate,
+            name=f"size: {size}, f_th: {f_th}, m_th: {m_th}"
+        )
 
     def run_segmentation(self):
-        size = self.sldr_size.value()
-        f_th = self.sldr_flow_th.value()
-        m_th = self.sldr_mask_th.value()
-        seg = SegmentNuclei(size, f_th, m_th)
-        #seg.run(self.dataset)
-          
-            
+        size = int(self.lbl_size.text())
+        f_th = float(self.lbl_flow_th.text())
+        m_th = float(self.lbl_mask_th.text())
+
+        if self.method_combo.currentText() == "Cellpose - Nuclei":
+            seg = segmentNuclei(size=size, flow_threshold=f_th, mask_threshold=m_th)
+        if self.method_combo.currentText() == "Cellpose - Cytoplasm":
+            seg = segmentCytoplasm(size=size, flow_threshold=f_th, mask_threshold=m_th)
+
+        seg.run(self.dataset)
+        self.viewer.add_labels(
+            self.dataset.segmentation[-1].objects,
+            name=f"Segmentation: size: {size}, f_th: {f_th}, m_th: {m_th}"
+        )
+
 
 class colorObjectWidget(QWidget):
     """Widget used to color objects by different features
