@@ -3,6 +3,7 @@ from main_widget import mainWidget
 import logging
 import napari
 
+
 logging.basicConfig(level=logging.DEBUG)
 
 

@@ -40,7 +40,7 @@ class Segmentation:
         self.background = df.iloc[0]
 
 
-class SegmentNuclei(Segmentation):
+class segmentNuclei(Segmentation):
     """Segment an image base on nuclei signal
     Stores segmentation under self.objects"""
 
@@ -64,7 +64,7 @@ class SegmentNuclei(Segmentation):
         dataset.segmentation.append(self)
 
 
-class SegmentCytoplasm(Segmentation):
+class segmentCytoplasm(Segmentation):
     """Segment an image base on nuclei and cytoplasm signal
     Stores segmentation under self.objects"""
 

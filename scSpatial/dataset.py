@@ -2,6 +2,7 @@
 from utility import select_file
 import imageio
 import pandas as pd
+from typing import Tuple
 
 
 class Dataset:
@@ -68,3 +69,39 @@ class Dataset:
         df.columns = ["x", "y", "gene"]
 
         self.gene_expression = df
+
+    def crop(self, center: Tuple[float, float], width: int=1000, height: int=1000) -> "Dataset":
+        """returns a cropped version of the dataset 
+        with added information about the cropping"""
+
+        # Create the new dataset to cold the cropped data
+        dataset = Dataset(name=f"cropped {self.name}")
+
+        # Calculate the bounding box coordinates of the crop
+        x0, x1 = (int(center[0]-(width/2)), int(center[0]+(width/2)))
+        y0, y1 = (int(center[1]-(height/2)), int(center[1]+(height/2)))
+
+        # Store cropping information
+        dataset.center = center
+        dataset.width = width
+        dataset.height = height
+        dataset.boundingbox = (x0, x1, y0, y1)
+        dataset.translate = (x0, y0)
+
+        # Cropping images
+        for name, image in self.images.items():
+            dataset.images[name] = image[x0:x1, y0:y1].copy()
+        
+        # Cropping genes
+        idx = list()
+        for i, gene in self.gene_expression.iterrows():
+            if gene.x > x0 and gene.x <= x1:
+                if gene.y > y0 and gene.y <= y1:
+                    idx.append(i)
+                    
+        df = self.gene_expression.iloc[idx].copy()
+        df.x = df.x - x0
+        df.y = df.y - y0
+        dataset.gene_expression = df
+
+        return dataset

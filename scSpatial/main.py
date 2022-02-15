@@ -2,7 +2,7 @@ from dataset import Dataset
 import logging
 import napari
 import matplotlib.pyplot as plt
-from segmentation import SegmentNuclei, SegmentCytoplasm
+from segmentation import segmentNuclei, segmentCytoplasm
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -37,7 +37,7 @@ d1.images["Cytoplasm"] = d1.images["Cytoplasm"][5000:6000, 6000:8000]
 d1.images["Nuclei"] = d1.images["Nuclei"][5000:6000, 6000:8000]
 
 # Running the segmentation process which is defined in the segmentation.py code, setting our own values /KM
-seg = SegmentCytoplasm(size=120, flow_threshold=0.4, mask_threshold=0)
+seg = segmentCytoplasm(size=120, flow_threshold=0.4, mask_threshold=0)
 seg.run(d1)
 
 # map genes for segmentation

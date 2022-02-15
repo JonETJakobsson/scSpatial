@@ -19,7 +19,7 @@ import sys
 import magicgui.widgets as magicWidget
 
 from dataset import Dataset
-from segmentation import SegmentCytoplasm, SegmentNuclei
+from segmentation import segmentCytoplasm, segmentNuclei
 from napari import Viewer
 
 
@@ -308,10 +308,10 @@ class segmentationWidget(QWidget):
             self.option_layout.addRow("Mask threshold", h3_layout)
 
             btn_run_test = QPushButton("Test run")
-            btn_run_test.clicked.connect(self.run_segmentation_nuclei_test)
+            btn_run_test.clicked.connect(self.run_segmentation_test)
 
             btn_run = QPushButton("Run")
-            btn_run.clicked.connect(self.run_segmentation_nuclei)
+            btn_run.clicked.connect(self.run_segmentation)
 
             self.option_layout.addWidget(btn_run_test)
             self.option_layout.addWidget(btn_run)
@@ -327,11 +327,22 @@ class segmentationWidget(QWidget):
             self.lbl_mask_th.setText(str(value))
 
 
-    def run_segmentation_nuclei_test(self):
+    def run_segmentation_test(self):
         _, y, x = self.viewer.camera.center
-        print(x, y)
+        crop = self.dataset.crop(center=(x, y))
 
-    def run_segmentation_nuclei(self):
+        if self.method_combo.currentText() == "Cellpose - Nuclei":
+            seg = segmentNuclei()
+        if self.method_combo.currentText() == "Cellpose - Cytoplasm":
+            seg = segmentCytoplasm()
+            seg.run(crop)
+            self.viewer.add_labels(
+                crop.segmentation[-1].objects,
+                translate=crop.translate,
+                name=f"specific settings..."
+            )
+
+    def run_segmentation(self):
         size = self.sldr_size.value()
         f_th = self.sldr_flow_th.value()
         m_th = self.sldr_mask_th.value()
