@@ -270,26 +270,42 @@ class segmentationWidget(QWidget):
 
     def create_option_widget(self):
         option = self.method_combo.currentText()
-        if option == "Cellpose - Nuclei":
-            h_layout = QHBoxLayout()
+        if option == "Cellpose - Nuclei" or option == "Cellpose - Cytoplasm":
+            h1_layout = QHBoxLayout()
             self.sldr_size = QSlider(Qt.Horizontal)
-            self.sldr_size.setMinimum(0)
-            self.sldr_size.setMaximum(100)
-            self.sldr_size.setValue(70)
-            self.sldr_size.valueChanged.connect(self.size_value_change)
+            self.sldr_size.setRange(0, 200)
+            if option == "Cellpose - Nuclei":
+                self.sldr_size.setValue(70)
+            else:
+                self.sldr_size.setValue(120)
+            self.sldr_size.valueChanged.connect(self.value_change)
             self.lbl_size = QLabel("")
             self.lbl_size.setText(str(self.sldr_size.value()))
-            h_layout.addWidget(self.sldr_size)
-            h_layout.addWidget(self.lbl_size)
-            self.option_layout.addRow("Size of nuclei", h_layout)
+            h1_layout.addWidget(self.sldr_size)
+            h1_layout.addWidget(self.lbl_size)
+            self.option_layout.addRow("Size of nuclei", h1_layout)
 
+            h2_layout = QHBoxLayout()
             self.sldr_flow_th = QSlider(Qt.Horizontal)
-            self.sldr_flow_th.setMinimum(0)
-            self.sldr_flow_th.setMaximum(100)
+            self.sldr_flow_th.setRange(0, 100)
             self.sldr_flow_th.setValue(40)
-            self.option_layout.addRow("Flow threshold", self.sldr_flow_th)
+            self.sldr_flow_th.valueChanged.connect(self.value_change)
+            self.lbl_flow_th = QLabel("")
+            self.lbl_flow_th.setText(str(self.sldr_flow_th.value()))
+            h2_layout.addWidget(self.sldr_flow_th)
+            h2_layout.addWidget(self.lbl_flow_th)
+            self.option_layout.addRow("Flow threshold", h2_layout)
 
-            
+            h3_layout = QHBoxLayout()
+            self.sldr_mask_th = QSlider(Qt.Horizontal)
+            self.sldr_mask_th.setRange(0, 1)
+            self.sldr_mask_th.setValue(0)
+            self.sldr_mask_th.valueChanged.connect(self.value_change)
+            self.lbl_mask_th = QLabel("")
+            self.lbl_mask_th.setText(str(self.sldr_mask_th.value()))
+            h3_layout.addWidget(self.sldr_mask_th)
+            h3_layout.addWidget(self.lbl_mask_th)
+            self.option_layout.addRow("Mask threshold", h3_layout)
 
             btn_run_test = QPushButton("Test run")
             btn_run_test.clicked.connect(self.run_segmentation_nuclei_test)
@@ -300,8 +316,16 @@ class segmentationWidget(QWidget):
             self.option_layout.addWidget(btn_run_test)
             self.option_layout.addWidget(btn_run)
 
-    def size_value_change(self, value):
-        self.lbl_size.setText(str(value))
+    def value_change(self, value):
+        if self.sender() == self.sldr_size:
+            self.lbl_size.setText(str(value))
+
+        elif self.sender() == self.sldr_flow_th:
+            self.lbl_flow_th.setText(str(value))
+
+        elif self.sender() == self.sldr_mask_th:
+            self.lbl_mask_th.setText(str(value))
+
 
     def run_segmentation_nuclei_test(self):
         _, y, x = self.viewer.camera.center
