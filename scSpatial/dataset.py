@@ -20,13 +20,12 @@ class Dataset:
         # Create datastructures
         self.images = dict()
         self.gene_expression = None
-        
 
         # Note, these are now added from the segmentation class
         self.segmentation = list()
 
         # Translate is changed by the crop method
-        self.translate=(0,0)
+        self.translate = (0, 0)
 
         # Add dataset to class dictionary
         self.all[name] = self
@@ -74,8 +73,13 @@ class Dataset:
 
         self.gene_expression = df
 
-    def crop(self, center: Tuple[float, float], width: int=1000, height: int=1000) -> "Dataset":
-        """returns a cropped version of the dataset 
+    def crop(
+        self,
+        center: Tuple[float, float],
+        width: int = 1000,
+        height: int = 1000
+    ) -> "Dataset":
+        """returns a cropped version of the dataset
         with added information about the cropping"""
 
         # Create the new dataset to cold the cropped data
@@ -95,7 +99,7 @@ class Dataset:
         # Cropping images
         for name, image in self.images.items():
             dataset.images[name] = image[x0:x1, y0:y1].copy()
-        
+
         # Cropping genes
         if isinstance(self.gene_expression, pd.DataFrame):
             idx = list()
@@ -103,7 +107,7 @@ class Dataset:
                 if gene.x > x0 and gene.x <= x1:
                     if gene.y > y0 and gene.y <= y1:
                         idx.append(i)
-                        
+
             df = self.gene_expression.iloc[idx].copy()
             df.x = df.x - x0
             df.y = df.y - y0
