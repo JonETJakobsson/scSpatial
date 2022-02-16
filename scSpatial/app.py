@@ -1,4 +1,5 @@
 from dataset import Dataset
+from viewer import Viewer
 from main_widget import mainWidget
 import logging
 import napari
@@ -17,10 +18,17 @@ class App:
 
         # Instatiate the empty dataset and viewer objects
         self.dataset = Dataset("scSpatial experiment")
-        self.viewer = napari.Viewer(axis_labels=["Dorsoventral", "Mediolateral"])
+        self.viewer = Viewer(
+            title="scSpatial",
+            axis_labels=["Dorsoventral", "Mediolateral"]
+        )
 
         # Load the docked widget and pass in the dataset and viewer
-        self.viewer.window.add_dock_widget(mainWidget(self.dataset, self.viewer), name="scSpatial", add_vertical_stretch=False)
+        self.viewer.window.add_dock_widget(
+            widget=mainWidget(self.dataset, self.viewer),
+            name="scSpatial",
+            add_vertical_stretch=False
+        )
 
         self.viewer.show()
         napari.run()

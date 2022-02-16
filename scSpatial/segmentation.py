@@ -1,23 +1,31 @@
 # Class to make segmentation of image and integrate object related data
 from cellpose import models
+from dataset import Dataset
 import pandas as pd
 
 
 class Segmentation:
-    def __init__(self):
-        """General segmentation
+    _id = 0
 
-        methods:
-        -------
-        self.run(Dataset): Runs the segmentation on the dataset.
-        and stores segmentation under self.objects
-        """
+    def __init__(self, type: str):
+        self.set_id()
+        self.type = type
+        self.settings = dict()
 
-    def run(self, dataset):
+    def set_id(self):
+        """Run to set next available ID of segmentation"""
+        # Set unique ID
+        self.id = Segmentation._id
+        Segmentation._id += 1
+
+    def __repr__(self):
+        return f"id:{self.id} type:{self.type}, settings:{self.settings}"
+
+    def run(self, dataset: Dataset):
         """Segment image and return the segmentation object"""
         pass
 
-    def map_genes(self, dataset):
+    def map_genes(self, dataset: Dataset):
         """map genes to segmented objects.
         return: gene expression matrix under self.gene_expression"""
         gene_map = list()
@@ -45,12 +53,20 @@ class segmentNuclei(Segmentation):
     Stores segmentation under self.objects"""
 
     def __init__(self, size=70, flow_threshold=0.4, mask_threshold=0):
-        # set variables
+        # set attributes
+        self.settings = dict(
+            size=size,
+            flow_threshold=flow_threshold,
+            mask_threshold=mask_threshold
+        )
+        self.type = "Cellpose - Nuclei"
         self.size = size
         self.flow_threshold = flow_threshold
         self.mask_threshold = mask_threshold
 
-    def run(self, dataset):
+        self.set_id()
+
+    def run(self, dataset: Dataset):
         model = models.Cellpose(model_type="nuclei")
         masks, flows, styles, diams = model.eval(
             dataset.images["Nuclei"],
@@ -69,12 +85,19 @@ class segmentCytoplasm(Segmentation):
     Stores segmentation under self.objects"""
 
     def __init__(self, size=120, flow_threshold=0.4, mask_threshold=0):
-        # set variables
+        # set attributes
+        self.settings = dict(
+            size=size,
+            flow_threshold=flow_threshold,
+            mask_threshold=mask_threshold
+        )
+        self.type = "Cellpose - Cytoplasm"
         self.size = size
         self.flow_threshold = flow_threshold
         self.mask_threshold = mask_threshold
+        self.set_id()
 
-    def run(self, dataset):
+    def run(self, dataset: Dataset):
         """segment image using nuclei information"""
         import numpy as np
 
