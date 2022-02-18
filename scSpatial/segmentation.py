@@ -1,7 +1,8 @@
 # Class to make segmentation of image and integrate object related data
-from cellpose import models
-from dataset import Dataset
 import pandas as pd
+from cellpose import models
+
+from dataset import Dataset
 
 
 class Segmentation:

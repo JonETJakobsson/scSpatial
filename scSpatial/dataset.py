@@ -1,8 +1,10 @@
 # Class represening raw dataset
-from utility import select_file
+from typing import Tuple
+
 import imageio
 import pandas as pd
-from typing import Tuple
+
+from utility import select_file
 
 
 class Dataset:

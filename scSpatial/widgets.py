@@ -1,27 +1,15 @@
-from PyQt5.QtWidgets import (
-    QWidget,
-    QLabel,
-    QListWidget,
-    QVBoxLayout,
-    QHBoxLayout,
-    QPushButton,
-    QComboBox,
-    QFormLayout,
-    QApplication,
-    QFileDialog,
-    QGridLayout,
-    QSlider,
-)
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
 import sys
 
-from dataset import Dataset
-
-from segmentation import segmentCytoplasm, segmentNuclei, Segmentation
-from viewer import Viewer
 import imageio
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import (QApplication, QComboBox, QFileDialog, QFormLayout,
+                             QGridLayout, QHBoxLayout, QLabel, QListWidget,
+                             QPushButton, QSlider, QVBoxLayout, QWidget)
 
+from dataset import Dataset
+from segmentation import Segmentation, segmentCytoplasm, segmentNuclei
+from viewer import Viewer
 
 h1 = QFont("Arial", 13)
 
@@ -213,6 +201,21 @@ class loadGenesWidget(QWidget):
 
 
 class segmentationWidget(QWidget):
+    """Collection of all widgets used under the segmentation tab"""
+    def __init__(self, dataset: Dataset, viewer: Viewer):
+        super().__init__()
+        self.dataset = dataset
+        self.viewer = viewer
+        self.initUI()
+
+    def initUI(self):
+        layout = QVBoxLayout()
+        layout.addWidget(segmentationCreateWidget(self.dataset, self.viewer))
+        layout.addWidget(segmentationControlWidget(self.dataset, self.viewer))
+        self.setLayout(layout)
+
+
+class segmentationCreateWidget(QWidget):
     """Widget used to run segmentation of the dataset"""
 
     def __init__(self, dataset: Dataset, viewer: Viewer):
@@ -354,6 +357,8 @@ class segmentationWidget(QWidget):
 
         seg.run(crop)
         self.viewer.add_segmentation(seg, crop)
+        # Add segmentation to main dataset segmentation list
+        self.dataset.segmentation.append(seg)
 
     def run_segmentation(self):
         size = int(self.lbl_size.text())
@@ -375,6 +380,40 @@ class segmentationWidget(QWidget):
 
         seg.run(self.dataset)
         self.viewer.add_segmentation(seg, self.dataset)
+
+
+class segmentationControlWidget(QWidget):
+    """Widget used to run segmentation of the dataset"""
+
+    def __init__(self, dataset: Dataset, viewer: Viewer):
+        super().__init__()
+        self.dataset = dataset
+        self.viewer = viewer
+        self.initUI()
+
+    def initUI(self):
+        self.layout = QVBoxLayout()
+        self.lbl = QLabel("Segmentation list:")
+        self.layout.addWidget(self.lbl)
+
+        # Add a refresh buton to update the list
+        # TODO: this should be automatic in the future when
+        # ever the segmentation list changes
+        self.update_btn = QPushButton("Update list")
+        self.update_btn.clicked.connect(self.update_segmentation_list)
+        self.layout.addWidget(self.update_btn)
+
+        self.seg_list = QListWidget(self)
+        self.layout.addWidget(self.seg_list)
+
+        self.setLayout(self.layout)
+
+    def update_segmentation_list(self):
+        self.seg_list.clear()
+        if len(self.dataset.segmentation) > 0:
+            print("adding")
+            for seg in self.dataset.segmentation:
+                self.seg_list.addItem(seg.__repr__())
 
 
 class colorObjectWidget(QWidget):

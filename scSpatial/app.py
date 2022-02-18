@@ -1,9 +1,10 @@
-from dataset import Dataset
-from viewer import Viewer
-from main_widget import mainWidget
 import logging
+
 import napari
 
+from dataset import Dataset
+from main_widget import mainWidget
+from viewer import Viewer
 
 logging.basicConfig(level=logging.DEBUG)
 
