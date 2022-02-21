@@ -220,7 +220,13 @@ class segmentCytoplasm(Segmentation):
     """Segment an image base on nuclei and cytoplasm signal
     Stores segmentation under self.objects"""
 
-    def __init__(self, dataset, size=120, flow_threshold=0.4, mask_threshold=0):
+    def __init__(
+        self,
+        dataset,
+        size=120,
+        flow_threshold=0.4,
+        mask_threshold=0
+    ):
         super().__init__(dataset=dataset, type="Cellpose - Cytoplasm")
         # set attributes
         self.settings = dict(

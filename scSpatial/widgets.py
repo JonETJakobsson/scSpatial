@@ -358,10 +358,9 @@ class segmentationCreateWidget(QWidget):
 
         seg.run()
         self.viewer.add_segmentation(seg, crop)
-        # Manually add segmentation to dataset as it will 
+        # Manually add segmentation to dataset as it will
         # only be added to the Crop dataset otherwise
-        self.dataset.add_segmentation(seg) 
-
+        self.dataset.add_segmentation(seg)
 
     def run_segmentation(self):
         size = int(self.lbl_size.text())
@@ -405,10 +404,7 @@ class segmentationControlWidget(QWidget):
         # Add a refresh buton to update the list
         # TODO: this should be automatic in the future when
         # ever the segmentation list changes
-        self.update_btn = QPushButton("Update list")
-        #self.update_btn.clicked.connect(self.update_segmentation_list)
         self.dataset.communicate.updated.connect(self.update_segmentation_list)
-        self.layout.addWidget(self.update_btn)
 
         self.seg_list = QListWidget(self)
         self.layout.addWidget(self.seg_list)
