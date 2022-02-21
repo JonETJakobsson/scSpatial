@@ -9,6 +9,7 @@ import pandas as pd
 from utility import select_file
 
 from PyQt5.QtCore import QObject, pyqtSignal
+from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem
 
 
 class Communicate(QObject):
@@ -156,7 +157,7 @@ class Segmentation:
         self.id = Segmentation._id
         Segmentation._id += 1
 
-    def __repr__(self):
+    def __repr__(self):        
         return f"id:{self.id} type:{self.type}, settings:{self.settings}"
 
     def run(self):

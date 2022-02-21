@@ -5,7 +5,7 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (QApplication, QComboBox, QFileDialog, QFormLayout,
                              QGridLayout, QHBoxLayout, QLabel, QListWidget,
-                             QPushButton, QSlider, QVBoxLayout, QWidget)
+                             QPushButton, QSlider, QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem)
 
 from dataset import Dataset, Segmentation, segmentCytoplasm, segmentNuclei
 from viewer import Viewer
@@ -406,18 +406,29 @@ class segmentationControlWidget(QWidget):
         # ever the segmentation list changes
         self.dataset.communicate.updated.connect(self.update_segmentation_list)
 
-        self.seg_list = QListWidget(self)
-        self.layout.addWidget(self.seg_list)
+        self.seg_table = QTableWidget(self)
+        #self.seg_table.selectedItems
+        self.layout.addWidget(self.seg_table)
 
         self.setLayout(self.layout)
 
     def update_segmentation_list(self):
-        self.seg_list.clear()
+        self.seg_table.clear()
+        self.seg_table.setColumnCount(3)
+        self.seg_table.setHorizontalHeaderLabels(["ID", "Type", "Settings"])
+        
         if len(self.dataset.segmentation) > 0:
             print("adding")
-            for id, seg in self.dataset.segmentation.items():
-                self.seg_list.addItem(seg.__repr__())
-
+            self.seg_table.setRowCount(len(self.dataset.segmentation))
+            i = 0
+            for _, seg in self.dataset.segmentation.items():
+                id = QTableWidgetItem(str(seg.id))
+                seg_type = QTableWidgetItem(seg.type)
+                settings = QTableWidgetItem(str(seg.settings))
+                self.seg_table.setItem(i, 0, id)
+                self.seg_table.setItem(i, 1, seg_type)
+                self.seg_table.setItem(i, 2, settings)
+                i = i + 1
 
 class colorObjectWidget(QWidget):
     """Widget used to color objects by different features
