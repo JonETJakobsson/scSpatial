@@ -7,8 +7,7 @@ from PyQt5.QtWidgets import (QApplication, QComboBox, QFileDialog, QFormLayout,
                              QGridLayout, QHBoxLayout, QLabel, QListWidget,
                              QPushButton, QSlider, QVBoxLayout, QWidget)
 
-from dataset import Dataset
-from segmentation import Segmentation, segmentCytoplasm, segmentNuclei
+from dataset import Dataset, Segmentation, segmentCytoplasm, segmentNuclei
 from viewer import Viewer
 
 h1 = QFont("Arial", 13)
@@ -328,10 +327,10 @@ class segmentationCreateWidget(QWidget):
         )[0]
 
         masks = imageio.imread(path).astype(int)
-        seg = Segmentation(type="External")
+        seg = Segmentation(dataset=self.dataset, type="External")
         seg.objects = masks
 
-        self.dataset.segmentation.append(seg)
+        self.dataset.add_segmentation(seg)
         self.viewer.add_segmentation(seg, self.dataset)
 
     def run_segmentation_test(self):
@@ -344,21 +343,25 @@ class segmentationCreateWidget(QWidget):
 
         if self.method_combo.currentText() == "Cellpose - Nuclei":
             seg = segmentNuclei(
+                dataset=crop,
                 size=size,
                 flow_threshold=f_th,
                 mask_threshold=m_th
             )
         if self.method_combo.currentText() == "Cellpose - Cytoplasm":
             seg = segmentCytoplasm(
+                dataset=crop,
                 size=size,
                 flow_threshold=f_th,
                 mask_threshold=m_th
             )
 
-        seg.run(crop)
+        seg.run()
         self.viewer.add_segmentation(seg, crop)
-        # Add segmentation to main dataset segmentation list
-        self.dataset.segmentation.append(seg)
+        # Manually add segmentation to dataset as it will 
+        # only be added to the Crop dataset otherwise
+        self.dataset.add_segmentation(seg) 
+
 
     def run_segmentation(self):
         size = int(self.lbl_size.text())
@@ -367,18 +370,21 @@ class segmentationCreateWidget(QWidget):
 
         if self.method_combo.currentText() == "Cellpose - Nuclei":
             seg = segmentNuclei(
+                dataset=self.dataset,
                 size=size,
                 flow_threshold=f_th,
                 mask_threshold=m_th
             )
         if self.method_combo.currentText() == "Cellpose - Cytoplasm":
             seg = segmentCytoplasm(
+                dataset=self.dataset,
                 size=size,
                 flow_threshold=f_th,
                 mask_threshold=m_th
             )
 
-        seg.run(self.dataset)
+        seg.run()
+
         self.viewer.add_segmentation(seg, self.dataset)
 
 
@@ -400,7 +406,8 @@ class segmentationControlWidget(QWidget):
         # TODO: this should be automatic in the future when
         # ever the segmentation list changes
         self.update_btn = QPushButton("Update list")
-        self.update_btn.clicked.connect(self.update_segmentation_list)
+        #self.update_btn.clicked.connect(self.update_segmentation_list)
+        self.dataset.communicate.updated.connect(self.update_segmentation_list)
         self.layout.addWidget(self.update_btn)
 
         self.seg_list = QListWidget(self)
@@ -412,7 +419,7 @@ class segmentationControlWidget(QWidget):
         self.seg_list.clear()
         if len(self.dataset.segmentation) > 0:
             print("adding")
-            for seg in self.dataset.segmentation:
+            for id, seg in self.dataset.segmentation.items():
                 self.seg_list.addItem(seg.__repr__())
 
 
