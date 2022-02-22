@@ -434,28 +434,28 @@ class colorObjectWidget(QWidget):
     """Widget used to color objects by different features
     (currently gene expression)"""
 
-    def __init__(self, dataset, viewer):
+    def __init__(self, dataset: Dataset, viewer: Viewer):
         super().__init__()
         self.dataset = dataset
         self.viewer = viewer
-        if len(self.dataset.segmentation) > 0:
-            self.initUI()
+        self.initUI()
 
     def initUI(self):
 
         self.label = QLabel(self)
-        self.label.setText("Color objects by gene:")
+        self.label.setText("Select segmentation")
         self.label.setFont(h1)
-        self.label.move(10, 10)
+
+        # Segmentation selection list
+        self.seg_combo = QComboBox(self)
+        self.dataset.communicate.updated.connect(self.populate_seg_combo)
+        # When segmentation is selected
+        self.seg_combo.currentTextChanged.connect(self.populate_gene_combo)
 
         # Gene selection list
-        self.listwidget = QListWidget(self)
-        self.listwidget.move(10, 10)
-
-        for gene in self.dataset.segmentation[0].gene_expression.columns:
-            self.listwidget.addItem(gene)
-
-        self.listwidget.itemClicked.connect(self.color_genes)
+        self.gene_combo = QComboBox(self)
+        # When gene is selected
+        self.gene_combo.currentTextChanged.connect(self.color_genes)
 
         # Reset button
         self.reset_button = QPushButton(self)
@@ -465,40 +465,59 @@ class colorObjectWidget(QWidget):
         # Layout of widget
         vbox = QVBoxLayout(self)
         vbox.addWidget(self.label)
-        vbox.addWidget(self.listwidget)
+        vbox.addWidget(self.seg_combo)
+        vbox.addWidget(self.gene_combo)
         vbox.addWidget(self.reset_button)
-        # vbox.addStretch()
-        hbox = QHBoxLayout(self)
-        hbox.addLayout(vbox)
-        hbox.addStretch()
+        vbox.addStretch()
 
-        self.layout = hbox
+        self.layout = vbox
 
-    def color_genes(self, listItem):
+    def populate_seg_combo(self):
+        self.seg_combo.clear()
+        if len(self.dataset.segmentation) > 0:
+            for id, seg in self.dataset.segmentation.items():
+                self.seg_combo.addItem(str(seg.id))
+    
+    def populate_gene_combo(self, id):
+        self.seg = self.dataset.segmentation[int(id)] 
+        self.seg.map_genes()
+
+        # Filter out genes that did not map to any cells
+        used_genes = []
+        for gene in self.seg.gene_expression.columns:
+            if sum(self.seg.gene_expression[gene]) > 0:
+                used_genes.append(gene)
+
+        self.seg.gene_expression = self.seg.gene_expression[used_genes]
+
+        for gene in self.seg.gene_expression.columns:
+            self.gene_combo.addItem(gene)
+
+    
+    def color_genes(self, gene):
         """Sets object color by selected gene"""
         import numpy as np
         from sklearn.preprocessing import minmax_scale
         from vispy.color.colormap import Colormap
 
-        gene = listItem.text()
-        values = self.dataset.segmentation[0].gene_expression[gene]
+        values = self.seg.gene_expression[gene].values
         values = np.log1p(values)
         values = minmax_scale(values)
         cmap = Colormap(["b", "r"])
         colors = cmap[values]
-        self.viewer.layers["segmentation"].color = dict(
+        self.viewer.layers[self.seg.__repr__()].color = dict(
             zip(
-                self.dataset.segmentation[0].gene_expression.index,
+                self.seg.gene_expression.index,
                 colors.rgba
             )
         )
         # Change blending to additive to allow black objects to disapear
-        self.viewer.layers["segmentation"].blending = "additive"
+        self.viewer.layers[self.seg.__repr__()].blending = "additive"
 
     def color_reset(self):
         """Reset object color to auto and translucent."""
-        self.viewer.layers["segmentation"].color_mode = "auto"
-        self.viewer.layers["segmentation"].blending = "translucent"
+        self.viewer.layers[self.seg.__repr__()].color_mode = "auto"
+        self.viewer.layers[self.seg.__repr__()].blending = "translucent"
 
 
 if __name__ == "__main__":
