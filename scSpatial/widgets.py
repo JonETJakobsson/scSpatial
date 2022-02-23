@@ -330,7 +330,7 @@ class segmentationCreateWidget(QWidget):
         seg = Segmentation(dataset=self.dataset, type="External")
         seg.objects = masks
         seg.map_genes()
-        
+
         self.dataset.add_segmentation(seg)
         self.viewer.add_segmentation(seg, self.dataset)
 
@@ -501,12 +501,12 @@ class colorObjectWidget(QWidget):
         """Sets object color by selected gene"""
         import numpy as np
         from sklearn.preprocessing import minmax_scale
-        from vispy.color.colormap import Colormap
+        from vispy.color.colormap import MatplotlibColormap
 
         values = self.seg.gene_expression[gene].values
         values = np.log1p(values)
         values = minmax_scale(values)
-        cmap = Colormap(["b", "r"])
+        cmap = MatplotlibColormap("inferno")
         colors = cmap[values]
         self.viewer.layers[self.seg.__repr__()].color = dict(
             zip(
