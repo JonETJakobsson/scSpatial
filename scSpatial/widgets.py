@@ -329,7 +329,8 @@ class segmentationCreateWidget(QWidget):
         masks = imageio.imread(path).astype(int)
         seg = Segmentation(dataset=self.dataset, type="External")
         seg.objects = masks
-
+        seg.map_genes()
+        
         self.dataset.add_segmentation(seg)
         self.viewer.add_segmentation(seg, self.dataset)
 
@@ -357,6 +358,7 @@ class segmentationCreateWidget(QWidget):
             )
 
         seg.run()
+        seg.map_genes()
         self.viewer.add_segmentation(seg, crop)
         # Manually add segmentation to dataset as it will
         # only be added to the Crop dataset otherwise
@@ -383,6 +385,7 @@ class segmentationCreateWidget(QWidget):
             )
 
         seg.run()
+        seg.map_genes()
 
         self.viewer.add_segmentation(seg, self.dataset)
 
@@ -479,8 +482,7 @@ class colorObjectWidget(QWidget):
                 self.seg_combo.addItem(str(seg.id))
     
     def populate_gene_combo(self, id):
-        self.seg = self.dataset.segmentation[int(id)] 
-        self.seg.map_genes()
+        self.seg = self.dataset.segmentation[int(id)]
 
         # Filter out genes that did not map to any cells
         used_genes = []
@@ -490,6 +492,7 @@ class colorObjectWidget(QWidget):
 
         self.seg.gene_expression = self.seg.gene_expression[used_genes]
 
+        self.gene_combo.clear()
         for gene in self.seg.gene_expression.columns:
             self.gene_combo.addItem(gene)
 
