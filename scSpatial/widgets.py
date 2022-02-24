@@ -6,6 +6,7 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import (QApplication, QComboBox, QFileDialog, QFormLayout,
                              QGridLayout, QHBoxLayout, QLabel, QListWidget,
                              QPushButton, QSlider, QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem)
+from matplotlib.pyplot import table
 
 from dataset import Dataset, Segmentation, segmentCytoplasm, segmentNuclei
 from viewer import Viewer
@@ -412,12 +413,13 @@ class segmentationControlWidget(QWidget):
         self.seg_table = QTableWidget(self)
         #self.seg_table.selectedItems
         self.layout.addWidget(self.seg_table)
-
+        
         self.setLayout(self.layout)
 
     def update_segmentation_list(self):
         self.seg_table.clear()
         self.seg_table.setColumnCount(3)
+    
         self.seg_table.setHorizontalHeaderLabels(["ID", "Type", "Settings"])
         
         if len(self.dataset.segmentation) > 0:
@@ -432,6 +434,10 @@ class segmentationControlWidget(QWidget):
                 self.seg_table.setItem(i, 1, seg_type)
                 self.seg_table.setItem(i, 2, settings)
                 i = i + 1
+        
+        self.seg_table.resizeColumnsToContents()
+    
+       
 
 class colorObjectWidget(QWidget):
     """Widget used to color objects by different features
