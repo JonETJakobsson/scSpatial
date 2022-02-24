@@ -1,10 +1,6 @@
-<<<<<<< Updated upstream
-from cProfile import label
-=======
-from ast import Raise
->>>>>>> Stashed changes
+
 import sys
-from unicodedata import name
+
 
 import imageio
 from PyQt5.QtCore import Qt
@@ -455,8 +451,6 @@ class segmentationControlWidget(QWidget):
                 i = i + 1
         
         self.seg_table.resizeColumnsToContents()
-<<<<<<< Updated upstream
-=======
     
 class analysisWidget(QWidget):
     """Widget used to run different analysis methods.
@@ -523,7 +517,6 @@ class analysisWidget(QWidget):
         bf = Bonefight(segmentation=self.dataset.segmentation[0], reference=self.reference_adata, groupby=self.groupby_combo.currentText())
         bf.transfer_labels()
 
->>>>>>> Stashed changes
 
 class colorObjectWidget(QWidget):
     """Widget used to color objects by different features
