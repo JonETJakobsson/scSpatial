@@ -94,7 +94,7 @@ class Dataset:
 
     def remove_segmentation(self, seg: "Segmentation"):
         """remove segmentation at specificed index in list"""
-        self.segmentation.pop[seg.id]
+        self.segmentation.pop(seg.id)
         self.communicate.updated.emit()
 
     def crop(

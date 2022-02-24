@@ -1,3 +1,5 @@
+from os import remove
+from unicodedata import name
 import napari
 from dataset import Dataset, Segmentation
 
@@ -13,6 +15,10 @@ class Viewer(napari.Viewer):
             translate=dataset.translate,
             name=seg.__repr__()
         )
+
+    def remove_segmentation(self, seg: Segmentation):
+        """Remove segmentation from viewer"""
+        self.layers.remove(self.layers[seg.__repr__()])
 
     def add_nuclei(self, dataset: Dataset):
         """Add image with key "Nuclei" to viewer"""

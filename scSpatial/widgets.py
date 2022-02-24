@@ -1,4 +1,6 @@
+from cProfile import label
 import sys
+from unicodedata import name
 
 import imageio
 from PyQt5.QtCore import Qt
@@ -414,13 +416,18 @@ class segmentationControlWidget(QWidget):
 
         #add_btn = QPushButton("Add to viewer")
         #add_btn.clicked.connect(self._add)
-        #buttonLayout.addWidget(add_btn)
 
         remove_btn = QPushButton("Remove row")
         remove_btn.clicked.connect(self._removeRow)
         self.layout.addWidget(remove_btn)
 
         self.setLayout(self.layout)
+
+    def _removeRow(self):
+        row = self.seg_table.currentRow()
+        id = self.seg_table.item(row, 0)
+        self.viewer.remove_segmentation(seg=self.dataset.segmentation[int(id.text())])
+        self.dataset.remove_segmentation(seg=self.dataset.segmentation[int(id.text())])
 
     def update_segmentation_list(self):
         self.seg_table.clear()
@@ -442,10 +449,6 @@ class segmentationControlWidget(QWidget):
                 i = i + 1
         
         self.seg_table.resizeColumnsToContents()
-
-    def _removeRow(self):
-        row = self.seg_table.currentRow()
-        self.seg_table.removeRow(row)
 
 class colorObjectWidget(QWidget):
     """Widget used to color objects by different features
