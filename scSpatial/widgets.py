@@ -56,7 +56,7 @@ class loadImageWidget(QWidget):
 
         btn_other = QPushButton("Other channel")
         btn_other.clicked.connect(self.launchOtherDialog)
-        layout.addWidget(btn_other, 2, 0)
+        layout.addWidget(btn_other, 2, 0, alignment = Qt.AlignTop)
 
         self.label_nuc = QLabel("")
         layout.addWidget(self.label_nuc, 0, 1)
@@ -65,7 +65,7 @@ class loadImageWidget(QWidget):
         layout.addWidget(self.label_cyto, 1, 1)
 
         self.label_other = QLabel("")
-        layout.addWidget(self.label_other, 2, 1)
+        layout.addWidget(self.label_other, 2, 1, alignment = Qt.AlignTop)
 
         self.setLayout(layout)
 
@@ -110,7 +110,6 @@ class loadImageWidget(QWidget):
                 path=self.other_path
             )
             self.viewer.add_other_channel(self.dataset, channel="other")
-
 
 class loadGenesWidget(QWidget):
     """Widget used for loading gene expression file"""
@@ -412,7 +411,15 @@ class segmentationControlWidget(QWidget):
         self.seg_table = QTableWidget(self)
         #self.seg_table.selectedItems
         self.layout.addWidget(self.seg_table)
-        
+
+        #add_btn = QPushButton("Add to viewer")
+        #add_btn.clicked.connect(self._add)
+        #buttonLayout.addWidget(add_btn)
+
+        remove_btn = QPushButton("Remove row")
+        remove_btn.clicked.connect(self._removeRow)
+        self.layout.addWidget(remove_btn)
+
         self.setLayout(self.layout)
 
     def update_segmentation_list(self):
@@ -435,8 +442,10 @@ class segmentationControlWidget(QWidget):
                 i = i + 1
         
         self.seg_table.resizeColumnsToContents()
-    
-       
+
+    def _removeRow(self):
+        row = self.seg_table.currentRow()
+        self.seg_table.removeRow(row)
 
 class colorObjectWidget(QWidget):
     """Widget used to color objects by different features
