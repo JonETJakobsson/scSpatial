@@ -528,8 +528,9 @@ class analysisWidget(QWidget):
 
     def run_bonefight_analysis(self):
         # Instantiate the bonefight object
-        bf_model = Bonefight(segmentation=self.dataset.segmentation[0], reference=self.reference_adata, groupby=self.groupby_combo.currentText())
-        bf_model.transfer_labels()
+        bf_model = Bonefight(segmentation=self.dataset.active_segmentation, reference=self.reference_adata, groupby=self.groupby_combo.currentText())
+        cell_types = bf_model.transfer_labels()
+        self.dataset.active_segmentation.cell_types = cell_types
 
 
 class colorObjectWidget(QWidget):
@@ -553,6 +554,7 @@ class colorObjectWidget(QWidget):
         self.dataset.communicate.updated.connect(self.populate_seg_combo)
         # When segmentation is selected
         self.seg_combo.currentTextChanged.connect(self.populate_options)
+        Segmentation.communicate.updated.connect(self.populate_options)
 
         # Gene selection list
         self.gene_combo = QComboBox(self)
@@ -593,8 +595,8 @@ class colorObjectWidget(QWidget):
         import pandas as pd
 
         # Select segmentation based on id
-        self.seg = self.dataset.segmentation[int(id)]
-
+        self.dataset.active_segmentation = self.dataset.segmentation[int(id)]
+        self.seg = self.dataset.active_segmentation
         # If gene expression is available
         # TODO: Should seg.map_genes() be run here?
         # Filter out genes that did not map to any cells

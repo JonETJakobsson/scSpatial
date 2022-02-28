@@ -24,7 +24,7 @@ class Bonefight:
         self.intersecting_genes = self.find_intersecting_genes()
 
         # Predict labels
-        self.predict()
+        return self.predict()
 
     def groupby_mean(self) -> pd.DataFrame:
         logging.info("finding mean gene expression per group")
@@ -73,4 +73,5 @@ class Bonefight:
         self.labels = np.eye(self.reference_tensor.shape[0])
         y = self.model.transform(self.labels)
 
-        self.segmentation.cell_types = pd.DataFrame(y, columns=self.reference_filtered.columns, index = self.segmentation.gene_expression.index)
+        cell_types = pd.DataFrame(y, columns=self.reference_filtered.columns, index = self.segmentation.gene_expression.index)
+        return cell_types

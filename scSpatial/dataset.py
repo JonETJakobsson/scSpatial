@@ -144,6 +144,7 @@ class Dataset:
 
 class Segmentation:
     _id = 0
+    communicate = Communicate()
 
     def __init__(self, dataset: Dataset, type: str, settings: dict = dict()):
         self.set_id()
@@ -152,6 +153,7 @@ class Segmentation:
         self.settings = dict()
         self.gene_expression: pd.DataFrame = None
         self.cell_types: pd.DataFrame = None
+        
 
     def set_id(self):
         """Run to set next available ID of segmentation"""
@@ -187,6 +189,10 @@ class Segmentation:
         self.gene_expression = df.iloc[1:]
         # Store genes mapping to background
         self.background = df.iloc[0]
+
+    def add_cell_types(self, cell_types: pd.DataFrame):
+        self.cell_types = cell_types
+        self.communicate.updated.emit()
 
 
 class segmentNuclei(Segmentation):
