@@ -5,7 +5,7 @@ from unicodedata import name
 
 import imageio
 from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
+from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtWidgets import (QApplication, QComboBox, QFileDialog, QFormLayout,
                              QGridLayout, QHBoxLayout, QLabel, QListWidget,
                              QPushButton, QSlider, QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem)
@@ -445,7 +445,12 @@ class segmentationControlWidget(QWidget):
     def set_active(self):
         row = self.seg_table.currentRow()
         id = self.seg_table.item(row, 0)
-        self.dataset.active_segmentation = self.dataset.segmentation[int(id.text())]
+        self.dataset.set_active_segmentation(self.dataset.segmentation[int(id.text())])
+        self.update_segmentation_list()
+        for column in range(3):
+            item = self.seg_table.item(row, column)
+            item.setBackground(QColor(255, 128, 128))
+
 
     def update_segmentation_list(self):
         self.seg_table.clear()

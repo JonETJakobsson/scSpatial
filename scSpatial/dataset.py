@@ -145,6 +145,10 @@ class Dataset:
 
         return dataset
 
+    def set_active_segmentation(self, segmentation: "Segmentation"):
+        self.active_segmentation = segmentation
+        self.com.active_segmentation_changed.emit()
+
 
 # Class to make segmentation of image and integrate object related data
 
