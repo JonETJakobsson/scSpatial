@@ -422,6 +422,10 @@ class segmentationControlWidget(QWidget):
         add_btn.clicked.connect(self._addtoViewer)
         self.layout.addWidget(add_btn)
 
+        set_btn = QPushButton("Set as active segmentation")
+        set_btn.clicked.connect(self.setActive)
+        self.layout.addWidget(set_btn)
+
         self.setLayout(self.layout)
 
     def _removeRow(self):
@@ -435,6 +439,11 @@ class segmentationControlWidget(QWidget):
         row = self.seg_table.currentRow()
         id = self.seg_table.item(row, 0)
         self.viewer.add_segmentation(seg=self.dataset.segmentation[int(id.text())], dataset=self.dataset)
+
+    def setActive(self):
+        row = self.seg_table.currentRow()
+        id = self.seg_table.item(row, 0)
+        self.dataset.active_segmentation = self.dataset.segmentation[int(id.text())]
 
     def update_segmentation_list(self):
         self.seg_table.clear()
