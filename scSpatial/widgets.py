@@ -408,39 +408,41 @@ class segmentationControlWidget(QWidget):
         self.lbl = QLabel("Segmentation list:")
         self.layout.addWidget(self.lbl)
 
-        self.dataset.communicate.updated.connect(self.update_segmentation_list)
+        self.dataset.com.segmentation_list_changed.connect(
+            self.update_segmentation_list
+        )
 
         self.seg_table = QTableWidget(self)
-        #self.seg_table.selectedItems
         self.layout.addWidget(self.seg_table)
 
-        remove_btn = QPushButton("Remove row")
-        remove_btn.clicked.connect(self._removeRow)
+        remove_btn = QPushButton("Delete segmentation")
+        remove_btn.clicked.connect(self.remove_row)
         self.layout.addWidget(remove_btn)
 
         add_btn = QPushButton("Add to viewer")
-        add_btn.clicked.connect(self._addtoViewer)
+        add_btn.clicked.connect(self.add_to_viewer)
         self.layout.addWidget(add_btn)
 
         set_btn = QPushButton("Set as active segmentation")
-        set_btn.clicked.connect(self.setActive)
+        set_btn.clicked.connect(self.set_active)
         self.layout.addWidget(set_btn)
 
+        self.layout.addStretch()
         self.setLayout(self.layout)
 
-    def _removeRow(self):
+    def remove_row(self):
         row = self.seg_table.currentRow()
         id = self.seg_table.item(row, 0)
         self.viewer.remove_segmentation(seg=self.dataset.segmentation[int(id.text())])
         self.dataset.remove_segmentation(seg=self.dataset.segmentation[int(id.text())])
 
-    def _addtoViewer(self):
+    def add_to_viewer(self):
         #TODO check if segmentation already is in list
         row = self.seg_table.currentRow()
         id = self.seg_table.item(row, 0)
         self.viewer.add_segmentation(seg=self.dataset.segmentation[int(id.text())], dataset=self.dataset)
 
-    def setActive(self):
+    def set_active(self):
         row = self.seg_table.currentRow()
         id = self.seg_table.item(row, 0)
         self.dataset.active_segmentation = self.dataset.segmentation[int(id.text())]
@@ -520,7 +522,7 @@ class analysisWidget(QWidget):
     def show_obs_example(self, key: str):
         from random import sample
         self.obs_example_list.clear()
-        example_list= sample(list(self.reference_adata.obs[key]), k=10)
+        example_list = sample(list(set(self.reference_adata.obs[key])), k=10)
         self.obs_example_list.addItems(
             [str(example) for example in example_list]
         )
@@ -528,9 +530,14 @@ class analysisWidget(QWidget):
 
     def run_bonefight_analysis(self):
         # Instantiate the bonefight object
-        bf_model = Bonefight(segmentation=self.dataset.active_segmentation, reference=self.reference_adata, groupby=self.groupby_combo.currentText())
+        bf_model = Bonefight(
+            segmentation=self.dataset.active_segmentation,
+            reference=self.reference_adata,
+            groupby=self.groupby_combo.currentText()
+        )
+
         cell_types = bf_model.transfer_labels()
-        self.dataset.active_segmentation.cell_types = cell_types
+        self.dataset.active_segmentation.add_cell_types = cell_types
 
 
 class colorObjectWidget(QWidget):
@@ -551,10 +558,12 @@ class colorObjectWidget(QWidget):
 
         # Segmentation selection list
         self.seg_combo = QComboBox(self)
-        self.dataset.communicate.updated.connect(self.populate_seg_combo)
-        # When segmentation is selected
+        self.dataset.com.segmentation_list_changed.connect(self.populate_seg_combo)
+
+        # Set when to update visualization options
         self.seg_combo.currentTextChanged.connect(self.populate_options)
-        Segmentation.communicate.updated.connect(self.populate_options)
+        self.dataset.com.active_segmentation_changed.connect(self.populate_options)
+        self.dataset.com.cell_types_changed.connect(self.populate_options)
 
         # Gene selection list
         self.gene_combo = QComboBox(self)
@@ -587,19 +596,15 @@ class colorObjectWidget(QWidget):
     def populate_seg_combo(self):
         self.seg_combo.clear()
         if len(self.dataset.segmentation) > 0:
-            for id, seg in self.dataset.segmentation.items():
+            for _, seg in self.dataset.segmentation.items():
                 self.seg_combo.addItem(str(seg.id))
     
-    def populate_options(self, id):
+    def populate_options(self):
         """draws visualization options based on the available data in segmentation"""
         import pandas as pd
 
-        # Select segmentation based on id
-        self.dataset.active_segmentation = self.dataset.segmentation[int(id)]
         self.seg = self.dataset.active_segmentation
-        # If gene expression is available
-        # TODO: Should seg.map_genes() be run here?
-        # Filter out genes that did not map to any cells
+       
         used_genes = []
         for gene in self.seg.gene_expression.columns:
             if sum(self.seg.gene_expression[gene]) > 0:

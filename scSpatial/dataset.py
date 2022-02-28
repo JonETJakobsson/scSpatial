@@ -5,6 +5,7 @@ from cellpose import models
 
 import imageio
 import pandas as pd
+import numpy as np
 
 from utility import select_file
 
@@ -13,7 +14,11 @@ from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem
 
 
 class Communicate(QObject):
-    updated = pyqtSignal()
+    """signals from datastructures"""
+    segmentation_list_changed = pyqtSignal()
+    active_segmentation_changed = pyqtSignal()
+    genes_mapped = pyqtSignal()
+    cell_types_changed = pyqtSignal()
 
 
 class Dataset:
@@ -26,14 +31,15 @@ class Dataset:
         name: Name of the dataset
         """
         # Assign information about dataset
-        self.name = name
+        self.name: str = name
 
         # Create datastructures
-        self.images = dict()
-        self.gene_expression = None
+        self.images: dict[str, np.ndarray] = dict()
+        self.gene_expression: pd.DataFrame = None
 
         # Note, these are now added from the segmentation class
-        self.segmentation: dict[int,Segmentation] = dict()
+        self.segmentation: dict[int, Segmentation] = dict()
+        self.active_segmentation: Segmentation = None
 
         # Translate is changed by the crop method
         self.translate = (0, 0)
@@ -42,7 +48,7 @@ class Dataset:
         self.all[name] = self
 
         # instantiate communicator object
-        self.communicate = Communicate()
+        self.com: Communicate = Communicate()
 
     def load_nuclei(self, path=False):
         """load nuclei image and store under images["Nuclei"]"""
@@ -90,12 +96,12 @@ class Dataset:
     def add_segmentation(self, seg: "Segmentation"):
         """add segmentation to the end of list"""
         self.segmentation[seg.id] = seg
-        self.communicate.updated.emit()
+        self.com.segmentation_list_changed.emit()
 
     def remove_segmentation(self, seg: "Segmentation"):
         """remove segmentation at specificed index in list"""
         self.segmentation.pop(seg.id)
-        self.communicate.updated.emit()
+        self.com.segmentation_list_changed.emit()
 
     def crop(
         self,
@@ -144,7 +150,6 @@ class Dataset:
 
 class Segmentation:
     _id = 0
-    communicate = Communicate()
 
     def __init__(self, dataset: Dataset, type: str, settings: dict = dict()):
         self.set_id()
@@ -190,9 +195,12 @@ class Segmentation:
         # Store genes mapping to background
         self.background = df.iloc[0]
 
+        # broadcast that genes are mapped
+        self.dataset.com.genes_mapped.emit()
+
     def add_cell_types(self, cell_types: pd.DataFrame):
         self.cell_types = cell_types
-        self.communicate.updated.emit()
+        self.dataset.com.cell_types_changed.emit()
 
 
 class segmentNuclei(Segmentation):

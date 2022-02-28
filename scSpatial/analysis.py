@@ -16,7 +16,7 @@ class Bonefight:
         self.reference = reference
         self.groupby = groupby
 
-    def transfer_labels(self):
+    def transfer_labels(self) -> pd.DataFrame:
         # group by key and calculate mean gene expression
         self.reference_mean = self.groupby_mean()
 
