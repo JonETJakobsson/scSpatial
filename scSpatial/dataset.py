@@ -33,7 +33,7 @@ class Dataset:
         self.gene_expression = None
 
         # Note, these are now added from the segmentation class
-        self.segmentation = dict()
+        self.segmentation: dict[int,Segmentation] = dict()
 
         # Translate is changed by the crop method
         self.translate = (0, 0)
@@ -150,6 +150,8 @@ class Segmentation:
         self.dataset = dataset
         self.type = type
         self.settings = dict()
+        self.gene_expression: pd.DataFrame = None
+        self.cell_types: pd.DataFrame = None
 
     def set_id(self):
         """Run to set next available ID of segmentation"""

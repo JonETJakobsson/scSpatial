@@ -519,8 +519,8 @@ class analysisWidget(QWidget):
 
     def run_bonefight_analysis(self):
         # Instantiate the bonefight object
-        bf = Bonefight(segmentation=self.dataset.segmentation[0], reference=self.reference_adata, groupby=self.groupby_combo.currentText())
-        bf.transfer_labels()
+        bf_model = Bonefight(segmentation=self.dataset.segmentation[0], reference=self.reference_adata, groupby=self.groupby_combo.currentText())
+        bf_model.transfer_labels()
 
 
 class colorObjectWidget(QWidget):
@@ -601,10 +601,10 @@ class colorObjectWidget(QWidget):
             self.gene_combo.addItem(gene)
 
         # If cell type information is available
-        # if isinstance(self.seg.cell_types, pd.DataFrame):
-        #     self.cell_type_combo.clear()
-        #     for cell_type in self.seg.cell_type.columns:
-        #         self.cell_type_combo.addItem(cell_type)
+        if isinstance(self.seg.cell_types, pd.DataFrame):
+            self.cell_type_combo.clear()
+            for cell_type in self.seg.cell_types.columns:
+                self.cell_type_combo.addItem(cell_type)
 
     
     def color_genes(self, gene):
