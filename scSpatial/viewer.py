@@ -1,3 +1,5 @@
+from fnmatch import translate
+from hmac import trans_36
 from os import remove
 from unicodedata import name
 import napari

@@ -1,5 +1,6 @@
 
 import sys
+from unicodedata import name
 
 
 import imageio
@@ -407,21 +408,19 @@ class segmentationControlWidget(QWidget):
         self.lbl = QLabel("Segmentation list:")
         self.layout.addWidget(self.lbl)
 
-        # Add a refresh buton to update the list
-        # TODO: this should be automatic in the future when
-        # ever the segmentation list changes
         self.dataset.communicate.updated.connect(self.update_segmentation_list)
 
         self.seg_table = QTableWidget(self)
         #self.seg_table.selectedItems
         self.layout.addWidget(self.seg_table)
 
-        #add_btn = QPushButton("Add to viewer")
-        #add_btn.clicked.connect(self._add)
-
         remove_btn = QPushButton("Remove row")
         remove_btn.clicked.connect(self._removeRow)
         self.layout.addWidget(remove_btn)
+
+        add_btn = QPushButton("Add to viewer")
+        add_btn.clicked.connect(self._addtoViewer)
+        self.layout.addWidget(add_btn)
 
         self.setLayout(self.layout)
 
@@ -430,6 +429,12 @@ class segmentationControlWidget(QWidget):
         id = self.seg_table.item(row, 0)
         self.viewer.remove_segmentation(seg=self.dataset.segmentation[int(id.text())])
         self.dataset.remove_segmentation(seg=self.dataset.segmentation[int(id.text())])
+
+    def _addtoViewer(self):
+        #TODO check if segmentation already is in list
+        row = self.seg_table.currentRow()
+        id = self.seg_table.item(row, 0)
+        self.viewer.add_segmentation(seg=self.dataset.segmentation[int(id.text())], dataset=self.dataset)
 
     def update_segmentation_list(self):
         self.seg_table.clear()
