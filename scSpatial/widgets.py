@@ -1,15 +1,23 @@
-
 import sys
-from unicodedata import name
-
 
 import imageio
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QColor
-from PyQt5.QtWidgets import (QApplication, QComboBox, QFileDialog, QFormLayout,
-                             QGridLayout, QHBoxLayout, QLabel, QListWidget,
-                             QPushButton, QSlider, QVBoxLayout, QWidget, QTableWidget, QTableWidgetItem)
-from numpy import array_str
+from PyQt5.QtWidgets import (
+    QApplication,
+    QComboBox,
+    QFileDialog,
+    QFormLayout,
+    QGridLayout,
+    QHBoxLayout,
+    QLabel,
+    QListWidget,
+    QPushButton,
+    QSlider,
+    QVBoxLayout,
+    QWidget,
+    QTableWidget,
+    QTableWidgetItem)
 
 from dataset import Dataset, Segmentation, segmentCytoplasm, segmentNuclei
 from viewer import Viewer
@@ -61,7 +69,7 @@ class loadImageWidget(QWidget):
 
         btn_other = QPushButton("Other channel")
         btn_other.clicked.connect(self.launchOtherDialog)
-        layout.addWidget(btn_other, 2, 0, alignment = Qt.AlignTop)
+        layout.addWidget(btn_other, 2, 0, alignment=Qt.AlignTop)
 
         self.label_nuc = QLabel("")
         layout.addWidget(self.label_nuc, 0, 1)
@@ -70,16 +78,12 @@ class loadImageWidget(QWidget):
         layout.addWidget(self.label_cyto, 1, 1)
 
         self.label_other = QLabel("")
-        layout.addWidget(self.label_other, 2, 1, alignment = Qt.AlignTop)
+        layout.addWidget(self.label_other, 2, 1, alignment=Qt.AlignTop)
 
         self.setLayout(layout)
 
     def launchNucleiDialog(self):
-        path = QFileDialog.getOpenFileName(
-            self,
-            "Select a nuclei image",
-            ""
-        )[0]
+        path = QFileDialog.getOpenFileName(self, "Select a nuclei image", "")[0]
         self.nuclei_path = path
         file_name = path.split("/")[-1]
 
@@ -89,11 +93,7 @@ class loadImageWidget(QWidget):
             self.viewer.add_nuclei(self.dataset)
 
     def launchCytoplasmDialog(self):
-        path = QFileDialog.getOpenFileName(
-            self,
-            "Select a cytoplasm image",
-            ""
-        )[0]
+        path = QFileDialog.getOpenFileName(self, "Select a cytoplasm image", "")[0]
         self.cytoplasm_path = path
         file_name = path.split("/")[-1]
 
@@ -110,11 +110,9 @@ class loadImageWidget(QWidget):
 
         if path:
             self.label_other.setText(fname)
-            self.dataset.load_other_channel(
-                channel="other",
-                path=self.other_path
-            )
+            self.dataset.load_other_channel(channel="other", path=self.other_path)
             self.viewer.add_other_channel(self.dataset, channel="other")
+
 
 class loadGenesWidget(QWidget):
     """Widget used for loading gene expression file"""
@@ -205,6 +203,7 @@ class loadGenesWidget(QWidget):
 
 class segmentationWidget(QWidget):
     """Collection of all widgets used under the segmentation tab"""
+
     def __init__(self, dataset: Dataset, viewer: Viewer):
         super().__init__()
         self.dataset = dataset
@@ -237,12 +236,7 @@ class segmentationCreateWidget(QWidget):
 
         self.method_combo = QComboBox()
         self.method_combo.addItems(
-            [
-                "select method",
-                "Cellpose - Nuclei",
-                "Cellpose - Cytoplasm",
-                "External"
-            ]
+            ["select method", "Cellpose - Nuclei", "Cellpose - Cytoplasm", "External"]
         )
         self.method_combo.currentTextChanged.connect(self.create_option_widget)
 
@@ -292,9 +286,7 @@ class segmentationCreateWidget(QWidget):
             self.sldr_mask_th.setValue(60)
             self.sldr_mask_th.valueChanged.connect(self.value_change)
             self.lbl_mask_th = QLabel("")
-            self.lbl_mask_th.setText(
-                str((self.sldr_mask_th.value() - 60) / 10)
-            )
+            self.lbl_mask_th.setText(str((self.sldr_mask_th.value() - 60) / 10))
             h3_layout.addWidget(self.sldr_mask_th)
             h3_layout.addWidget(self.lbl_mask_th)
             self.option_layout.addRow("Mask threshold", h3_layout)
@@ -325,10 +317,9 @@ class segmentationCreateWidget(QWidget):
             self.lbl_mask_th.setText(str(value))
 
     def load_segmentation_file(self):
-        path = QFileDialog.getOpenFileName(
-            self,
-            caption="select a segmentation file"
-        )[0]
+        path = QFileDialog.getOpenFileName(self, caption="select a segmentation file")[
+            0
+        ]
 
         masks = imageio.imread(path).astype(int)
         seg = Segmentation(dataset=self.dataset, type="External")
@@ -348,17 +339,11 @@ class segmentationCreateWidget(QWidget):
 
         if self.method_combo.currentText() == "Cellpose - Nuclei":
             seg = segmentNuclei(
-                dataset=crop,
-                size=size,
-                flow_threshold=f_th,
-                mask_threshold=m_th
+                dataset=crop, size=size, flow_threshold=f_th, mask_threshold=m_th
             )
         if self.method_combo.currentText() == "Cellpose - Cytoplasm":
             seg = segmentCytoplasm(
-                dataset=crop,
-                size=size,
-                flow_threshold=f_th,
-                mask_threshold=m_th
+                dataset=crop, size=size, flow_threshold=f_th, mask_threshold=m_th
             )
 
         seg.run()
@@ -378,14 +363,14 @@ class segmentationCreateWidget(QWidget):
                 dataset=self.dataset,
                 size=size,
                 flow_threshold=f_th,
-                mask_threshold=m_th
+                mask_threshold=m_th,
             )
         if self.method_combo.currentText() == "Cellpose - Cytoplasm":
             seg = segmentCytoplasm(
                 dataset=self.dataset,
                 size=size,
                 flow_threshold=f_th,
-                mask_threshold=m_th
+                mask_threshold=m_th,
             )
 
         seg.run()
@@ -437,10 +422,12 @@ class segmentationControlWidget(QWidget):
         self.dataset.remove_segmentation(seg=self.dataset.segmentation[int(id.text())])
 
     def add_to_viewer(self):
-        #TODO check if segmentation already is in list
+        # TODO check if segmentation already is in list
         row = self.seg_table.currentRow()
         id = self.seg_table.item(row, 0)
-        self.viewer.add_segmentation(seg=self.dataset.segmentation[int(id.text())], dataset=self.dataset)
+        self.viewer.add_segmentation(
+            seg=self.dataset.segmentation[int(id.text())], dataset=self.dataset
+        )
 
     def set_active(self):
         row = self.seg_table.currentRow()
@@ -451,15 +438,13 @@ class segmentationControlWidget(QWidget):
             item = self.seg_table.item(row, column)
             item.setBackground(QColor(255, 128, 128))
 
-
     def update_segmentation_list(self):
         self.seg_table.clear()
         self.seg_table.setColumnCount(3)
-    
+
         self.seg_table.setHorizontalHeaderLabels(["ID", "Type", "Settings"])
-        
+
         if len(self.dataset.segmentation) > 0:
-            print("adding")
             self.seg_table.setRowCount(len(self.dataset.segmentation))
             i = 0
             for _, seg in self.dataset.segmentation.items():
@@ -470,9 +455,10 @@ class segmentationControlWidget(QWidget):
                 self.seg_table.setItem(i, 1, seg_type)
                 self.seg_table.setItem(i, 2, settings)
                 i = i + 1
-        
+
         self.seg_table.resizeColumnsToContents()
-    
+
+
 class analysisWidget(QWidget):
     """Widget used to run different analysis methods.
     BoneFight
@@ -494,7 +480,7 @@ class analysisWidget(QWidget):
         self.groupby_combo.currentTextChanged.connect(self.show_obs_example)
 
         self.obs_example_list = QListWidget(self)
-        
+
         self.bonefight_btn = QPushButton("Run BoneFight analysis")
         self.bonefight_btn.clicked.connect(self.run_bonefight_analysis)
         self.bonefight_btn.setEnabled(False)
@@ -510,27 +496,22 @@ class analysisWidget(QWidget):
 
     def read_reference_dataset(self):
         import scanpy as sc
-        path = QFileDialog.getOpenFileName(
-            self, 
-            caption="Select reference dataset"
-        )[0]
+
+        path = QFileDialog.getOpenFileName(self, caption="Select reference dataset")[0]
 
         self.reference_adata = sc.read(path)
 
         if len(self.reference_adata.obs_keys()) > 0:
-            self.groupby_combo.addItems(
-                self.reference_adata.obs_keys()
-            )
+            self.groupby_combo.addItems(self.reference_adata.obs_keys())
         else:
             print("Error: reference dataset must contain atleast one observation")
 
     def show_obs_example(self, key: str):
         from random import sample
+
         self.obs_example_list.clear()
         example_list = sample(list(set(self.reference_adata.obs[key])), k=10)
-        self.obs_example_list.addItems(
-            [str(example) for example in example_list]
-        )
+        self.obs_example_list.addItems([str(example) for example in example_list])
         self.bonefight_btn.setEnabled(True)
 
     def run_bonefight_analysis(self):
@@ -538,11 +519,11 @@ class analysisWidget(QWidget):
         bf_model = Bonefight(
             segmentation=self.dataset.active_segmentation,
             reference=self.reference_adata,
-            groupby=self.groupby_combo.currentText()
+            groupby=self.groupby_combo.currentText(),
         )
 
         cell_types = bf_model.transfer_labels()
-        self.dataset.active_segmentation.add_cell_types = cell_types
+        self.dataset.active_segmentation.add_cell_types(cell_types)
 
 
 class colorObjectWidget(QWidget):
@@ -557,17 +538,10 @@ class colorObjectWidget(QWidget):
 
     def initUI(self):
 
-        self.label = QLabel(self)
-        self.label.setText("Select segmentation")
-        self.label.setFont(h1)
-
-        # Segmentation selection list
-        self.seg_combo = QComboBox(self)
-        self.dataset.com.segmentation_list_changed.connect(self.populate_seg_combo)
-
         # Set when to update visualization options
-        self.seg_combo.currentTextChanged.connect(self.populate_options)
+        # When active segmentation is set
         self.dataset.com.active_segmentation_changed.connect(self.populate_options)
+        # When changes are made to a segmentations cell_types
         self.dataset.com.cell_types_changed.connect(self.populate_options)
 
         # Gene selection list
@@ -587,8 +561,6 @@ class colorObjectWidget(QWidget):
 
         # Layout of widget
         vbox = QVBoxLayout(self)
-        vbox.addWidget(self.label)
-        vbox.addWidget(self.seg_combo)
         vbox.addWidget(QLabel("Color by gene:"))
         vbox.addWidget(self.gene_combo)
         vbox.addWidget(QLabel("Color by cell type:"))
@@ -603,13 +575,13 @@ class colorObjectWidget(QWidget):
         if len(self.dataset.segmentation) > 0:
             for _, seg in self.dataset.segmentation.items():
                 self.seg_combo.addItem(str(seg.id))
-    
+
     def populate_options(self):
         """draws visualization options based on the available data in segmentation"""
         import pandas as pd
 
         self.seg = self.dataset.active_segmentation
-       
+
         used_genes = []
         for gene in self.seg.gene_expression.columns:
             if sum(self.seg.gene_expression[gene]) > 0:
@@ -627,7 +599,6 @@ class colorObjectWidget(QWidget):
             for cell_type in self.seg.cell_types.columns:
                 self.cell_type_combo.addItem(cell_type)
 
-    
     def color_genes(self, gene):
         """Sets object color by selected gene"""
         import numpy as np
@@ -640,10 +611,7 @@ class colorObjectWidget(QWidget):
         cmap = MatplotlibColormap("inferno")
         colors = cmap[values]
         self.viewer.layers[self.seg.__repr__()].color = dict(
-            zip(
-                self.seg.gene_expression.index,
-                colors.rgba
-            )
+            zip(self.seg.gene_expression.index, colors.rgba)
         )
         # Change blending to additive to allow black objects to disapear
         self.viewer.layers[self.seg.__repr__()].blending = "additive"
@@ -660,10 +628,7 @@ class colorObjectWidget(QWidget):
         cmap = MatplotlibColormap("inferno")
         colors = cmap[values]
         self.viewer.layers[self.seg.__repr__()].color = dict(
-            zip(
-                self.seg.cell_types.index,
-                colors.rgba
-            )
+            zip(self.seg.cell_types.index, colors.rgba)
         )
         # Change blending to additive to allow black objects to disapear
         self.viewer.layers[self.seg.__repr__()].blending = "additive"
