@@ -1,4 +1,4 @@
-import sys
+import pandas as pd
 
 import imageio
 from PyQt5.QtCore import Qt
@@ -18,6 +18,8 @@ from PyQt5.QtWidgets import (
     QWidget,
     QTableWidget,
     QTableWidgetItem)
+
+import sys
 
 from dataset import Dataset, Segmentation, segmentCytoplasm, segmentNuclei
 from viewer import Viewer
@@ -412,6 +414,10 @@ class segmentationControlWidget(QWidget):
         set_btn.clicked.connect(self.set_active)
         self.layout.addWidget(set_btn)
 
+        export_btn = QPushButton("Export segmentation")
+        export_btn.clicked.connect(self.export_seg)
+        self.layout.addWidget(export_btn)
+
         self.layout.addStretch()
         self.setLayout(self.layout)
 
@@ -437,6 +443,17 @@ class segmentationControlWidget(QWidget):
         for column in range(3):
             item = self.seg_table.item(row, column)
             item.setBackground(QColor(255, 128, 128))
+
+    def export_seg(self):
+        row = self.seg_table.currentRow()
+        id = self.seg_table.item(row, 0)
+        seg = self.dataset.segmentation[int(id.text())]
+
+        path = QFileDialog.getSaveFileName(caption="Save as", filter="Excel File (*.xlsx)")[0]
+        writer = pd.ExcelWriter(path)
+        seg.gene_expression.to_excel(writer, sheet_name="Gene Expression")
+        seg.background.to_excel(writer, sheet_name="Background")
+        writer.save()
 
     def update_segmentation_list(self):
         self.seg_table.clear()
