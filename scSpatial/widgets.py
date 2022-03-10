@@ -63,14 +63,17 @@ class loadImageWidget(QWidget):
 
         btn_nuclei = QPushButton("Select a nuclei image")
         btn_nuclei.clicked.connect(self.launchNucleiDialog)
+        btn_nuclei.setToolTip("Open a tif file")
         layout.addWidget(btn_nuclei, 0, 0)
 
         btn_cytoplasm = QPushButton("Select a cytoplasm image")
         btn_cytoplasm.clicked.connect(self.launchCytoplasmDialog)
+        btn_cytoplasm.setToolTip("Open a tif file")
         layout.addWidget(btn_cytoplasm, 1, 0)
 
         btn_other = QPushButton("Other channel")
         btn_other.clicked.connect(self.launchOtherDialog)
+        btn_other.setToolTip("Open a tif file")
         layout.addWidget(btn_other, 2, 0, alignment=Qt.AlignTop)
 
         self.label_nuc = QLabel("")
@@ -115,7 +118,6 @@ class loadImageWidget(QWidget):
             self.dataset.load_other_channel(channel="other", path=self.other_path)
             self.viewer.add_other_channel(self.dataset, channel="other")
 
-
 class loadGenesWidget(QWidget):
     """Widget used for loading gene expression file"""
 
@@ -128,6 +130,7 @@ class loadGenesWidget(QWidget):
     def initUI(self):
         # Button to open file dialog
         self.btn_load_file = QPushButton("Select gene file")
+        self.btn_load_file.setToolTip("Open a csv file")
         self.btn_load_file.clicked.connect(self.load_df)
 
         # Use form layout and add button to the top
@@ -294,9 +297,11 @@ class segmentationCreateWidget(QWidget):
             self.option_layout.addRow("Mask threshold", h3_layout)
 
             btn_run_test = QPushButton("Test run")
+            btn_run_test.setToolTip("A test segmentation is run on a small section")
             btn_run_test.clicked.connect(self.run_segmentation_test)
 
             btn_run = QPushButton("Run")
+            btn_run.setToolTip("Run segmentation on entire image")
             btn_run.clicked.connect(self.run_segmentation)
 
             self.option_layout.addWidget(btn_run_test)
@@ -403,18 +408,22 @@ class segmentationControlWidget(QWidget):
         self.layout.addWidget(self.seg_table)
 
         remove_btn = QPushButton("Delete segmentation")
+        remove_btn.setToolTip("Remove segmentation from viewer and segmentation list")
         remove_btn.clicked.connect(self.remove_row)
         self.layout.addWidget(remove_btn)
 
         add_btn = QPushButton("Add to viewer")
+        add_btn.setToolTip("Did you accidentally remove a segmentation? Press to add it to viewer again")
         add_btn.clicked.connect(self.add_to_viewer)
         self.layout.addWidget(add_btn)
 
         set_btn = QPushButton("Set as active segmentation")
+        set_btn.setToolTip("Selected segmentation will be viewed")
         set_btn.clicked.connect(self.set_active)
         self.layout.addWidget(set_btn)
 
         export_btn = QPushButton("Export segmentation")
+        export_btn.setToolTip("Exports an excel file with information about mapped genes to objects and background")
         export_btn.clicked.connect(self.export_seg)
         self.layout.addWidget(export_btn)
 
