@@ -508,9 +508,6 @@ class segmentationInfoWidget(QWidget):
 
         self.setWindowTitle(f"{self.seg.__repr__()}")
 
-        self.
-
-
 
         self.show()
 
