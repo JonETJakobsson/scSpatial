@@ -428,6 +428,7 @@ class segmentationControlWidget(QWidget):
         self.layout.addWidget(export_btn)
 
         seg_info_btn = QPushButton("Show statistics")
+        seg_info_btn.setToolTip("Opens a pop-up window with detailed information about segmentation")
         seg_info_btn.clicked.connect(self.open_segmentation_info_window)
         self.layout.addWidget(seg_info_btn)
 
@@ -489,7 +490,7 @@ class segmentationControlWidget(QWidget):
         self.seg_table.resizeColumnsToContents()
 
     def open_segmentation_info_window(self):
-        """Opens a pup up window with statistics for a selected segmentation"""
+        """Opens a pop-up window with statistics for a selected segmentation"""
         # Fetch selected segmentation
         row = self.seg_table.currentRow()
         id = self.seg_table.item(row, 0)
@@ -507,10 +508,6 @@ class segmentationInfoWidget(QWidget):
         self.layout = QVBoxLayout(self)
 
         self.setWindowTitle(f"{self.seg.__repr__()}")
-
-        self.
-
-
 
         self.show()
 
