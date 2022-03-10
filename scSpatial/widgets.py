@@ -418,6 +418,10 @@ class segmentationControlWidget(QWidget):
         export_btn.clicked.connect(self.export_seg)
         self.layout.addWidget(export_btn)
 
+        seg_info_btn = QPushButton("Show statistics")
+        seg_info_btn.clicked.connect(self.open_segmentation_info_window)
+        self.layout.addWidget(seg_info_btn)
+
         self.layout.addStretch()
         self.setLayout(self.layout)
 
@@ -475,6 +479,31 @@ class segmentationControlWidget(QWidget):
 
         self.seg_table.resizeColumnsToContents()
 
+    def open_segmentation_info_window(self):
+        """Opens a pup up window with statistics for a selected segmentation"""
+        # Fetch selected segmentation
+        row = self.seg_table.currentRow()
+        id = self.seg_table.item(row, 0)
+        seg = self.dataset.segmentation[int(id.text())]
+
+        self.segmentation_info_widget = segmentationInfoWidget(seg)
+
+class segmentationInfoWidget(QWidget):
+    def __init__(self, seg):
+        super().__init__()
+        self.seg = seg
+        self.initUI()
+
+    def initUI(self):
+        self.layout = QVBoxLayout(self)
+
+        self.setWindowTitle(f"{self.seg.__repr__()}")
+
+        self.
+
+
+
+        self.show()
 
 class analysisWidget(QWidget):
     """Widget used to run different analysis methods.
