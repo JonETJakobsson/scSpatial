@@ -408,18 +408,22 @@ class segmentationControlWidget(QWidget):
         self.layout.addWidget(self.seg_table)
 
         remove_btn = QPushButton("Delete segmentation")
+        remove_btn.setToolTip("Remove segmentation from viewer and segmentation list")
         remove_btn.clicked.connect(self.remove_row)
         self.layout.addWidget(remove_btn)
 
         add_btn = QPushButton("Add to viewer")
+        add_btn.setToolTip("Did you accidentally remove a segmentation? Press to add it to viewer again")
         add_btn.clicked.connect(self.add_to_viewer)
         self.layout.addWidget(add_btn)
 
         set_btn = QPushButton("Set as active segmentation")
+        set_btn.setToolTip("Selected segmentation will be viewed")
         set_btn.clicked.connect(self.set_active)
         self.layout.addWidget(set_btn)
 
         export_btn = QPushButton("Export segmentation")
+        export_btn.setToolTip("Exports an excel file with information about mapped genes to objects and background")
         export_btn.clicked.connect(self.export_seg)
         self.layout.addWidget(export_btn)
 
