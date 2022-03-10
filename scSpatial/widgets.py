@@ -63,14 +63,17 @@ class loadImageWidget(QWidget):
 
         btn_nuclei = QPushButton("Select a nuclei image")
         btn_nuclei.clicked.connect(self.launchNucleiDialog)
+        btn_nuclei.setToolTip("Open a tif file")
         layout.addWidget(btn_nuclei, 0, 0)
 
         btn_cytoplasm = QPushButton("Select a cytoplasm image")
         btn_cytoplasm.clicked.connect(self.launchCytoplasmDialog)
+        btn_cytoplasm.setToolTip("Open a tif file")
         layout.addWidget(btn_cytoplasm, 1, 0)
 
         btn_other = QPushButton("Other channel")
         btn_other.clicked.connect(self.launchOtherDialog)
+        btn_other.setToolTip("Open a tif file")
         layout.addWidget(btn_other, 2, 0, alignment=Qt.AlignTop)
 
         self.label_nuc = QLabel("")
@@ -115,7 +118,6 @@ class loadImageWidget(QWidget):
             self.dataset.load_other_channel(channel="other", path=self.other_path)
             self.viewer.add_other_channel(self.dataset, channel="other")
 
-
 class loadGenesWidget(QWidget):
     """Widget used for loading gene expression file"""
 
@@ -128,6 +130,7 @@ class loadGenesWidget(QWidget):
     def initUI(self):
         # Button to open file dialog
         self.btn_load_file = QPushButton("Select gene file")
+        self.btn_load_file.setToolTip("Open a csv file")
         self.btn_load_file.clicked.connect(self.load_df)
 
         # Use form layout and add button to the top
@@ -294,9 +297,11 @@ class segmentationCreateWidget(QWidget):
             self.option_layout.addRow("Mask threshold", h3_layout)
 
             btn_run_test = QPushButton("Test run")
+            btn_run_test.setToolTip("A test segmentation is run on a small section")
             btn_run_test.clicked.connect(self.run_segmentation_test)
 
             btn_run = QPushButton("Run")
+            btn_run.setToolTip("Run segmentation on entire image")
             btn_run.clicked.connect(self.run_segmentation)
 
             self.option_layout.addWidget(btn_run_test)
