@@ -34,5 +34,5 @@ class App:
         self.viewer.show()
         napari.run()
 
- 
+
 app = App()
