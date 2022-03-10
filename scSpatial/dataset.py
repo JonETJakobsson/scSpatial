@@ -1,20 +1,17 @@
-# Class represening raw dataset
-from typing import Tuple
-
 from cellpose import models
-
+from PyQt5.QtCore import QObject, pyqtSignal
 import imageio
 import pandas as pd
 import numpy as np
 
-from utility import select_file
+from typing import Tuple
 
-from PyQt5.QtCore import QObject, pyqtSignal
-from PyQt5.QtWidgets import QTableWidget, QTableWidgetItem
+from utility import select_file
 
 
 class Communicate(QObject):
     """signals from datastructures"""
+
     segmentation_list_changed = pyqtSignal()
     active_segmentation_changed = pyqtSignal()
     genes_mapped = pyqtSignal()
@@ -104,10 +101,7 @@ class Dataset:
         self.com.segmentation_list_changed.emit()
 
     def crop(
-        self,
-        center: Tuple[float, float],
-        width: int = 1000,
-        height: int = 1000
+        self, center: Tuple[float, float], width: int = 1000, height: int = 1000
     ) -> "Dataset":
         """returns a cropped version of the dataset
         with added information about the cropping"""
@@ -116,8 +110,8 @@ class Dataset:
         dataset = Dataset(name=f"cropped {self.name}")
 
         # Calculate the bounding box coordinates of the crop
-        x0, x1 = (int(center[0]-(width/2)), int(center[0]+(width/2)))
-        y0, y1 = (int(center[1]-(height/2)), int(center[1]+(height/2)))
+        x0, x1 = (int(center[0] - (width / 2)), int(center[0] + (width / 2)))
+        y0, y1 = (int(center[1] - (height / 2)), int(center[1] + (height / 2)))
 
         # Store cropping information
         dataset.center = center
@@ -152,6 +146,7 @@ class Dataset:
 
 # Class to make segmentation of image and integrate object related data
 
+
 class Segmentation:
     _id = 0
 
@@ -162,7 +157,6 @@ class Segmentation:
         self.settings = dict()
         self.gene_expression: pd.DataFrame = None
         self.cell_types: pd.DataFrame = None
-        
 
     def set_id(self):
         """Run to set next available ID of segmentation"""
@@ -170,7 +164,7 @@ class Segmentation:
         self.id = Segmentation._id
         Segmentation._id += 1
 
-    def __repr__(self):        
+    def __repr__(self):
         return f"id:{self.id} type:{self.type}, settings:{self.settings}"
 
     def run(self):
@@ -187,11 +181,7 @@ class Segmentation:
 
         df = pd.DataFrame(gene_map, columns=["gene", "object_id", "value"])
         df = df.pivot_table(
-            index="object_id",
-            columns="gene",
-            values="value",
-            fill_value=0,
-            aggfunc=sum
+            index="object_id", columns="gene", values="value", fill_value=0, aggfunc=sum
         )
 
         # Store genes mapping to objects
@@ -215,9 +205,7 @@ class segmentNuclei(Segmentation):
         super().__init__(dataset=dataset, type="Cellpose - Nuclei")
         # set attributes
         self.settings = dict(
-            size=size,
-            flow_threshold=flow_threshold,
-            mask_threshold=mask_threshold
+            size=size, flow_threshold=flow_threshold, mask_threshold=mask_threshold
         )
         self.size = size
         self.flow_threshold = flow_threshold
@@ -241,19 +229,11 @@ class segmentCytoplasm(Segmentation):
     """Segment an image base on nuclei and cytoplasm signal
     Stores segmentation under self.objects"""
 
-    def __init__(
-        self,
-        dataset,
-        size=120,
-        flow_threshold=0.4,
-        mask_threshold=0
-    ):
+    def __init__(self, dataset, size=120, flow_threshold=0.4, mask_threshold=0):
         super().__init__(dataset=dataset, type="Cellpose - Cytoplasm")
         # set attributes
         self.settings = dict(
-            size=size,
-            flow_threshold=flow_threshold,
-            mask_threshold=mask_threshold
+            size=size, flow_threshold=flow_threshold, mask_threshold=mask_threshold
         )
         self.size = size
         self.flow_threshold = flow_threshold
