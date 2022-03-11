@@ -1,6 +1,5 @@
-from matplotlib.pyplot import ylabel
+import plotly.express as px
 import pandas as pd
-
 import imageio
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QColor
@@ -512,25 +511,36 @@ class segmentationInfoWidget(QWidget):
         self.initUI()
 
     def initUI(self):
-        from pyqtgraph import BarGraphItem, plot
-        import plotly.express as px
+        self.setWindowTitle(f"{self.seg.__repr__()}")
+        self.setGeometry(0, 0, 1000, 500)
+        #Layout is horisontal with info on left and graph on right
         self.layout = QVBoxLayout(self)
 
-        self.setWindowTitle(f"{self.seg.__repr__()}")
+        self.info_form_layout = QFormLayout()
+        sum_tot = self.seg.gene_expression.sum().sum()
+        sum_backgound = self.seg.background.sum()
+        total_pct =  sum_tot / (sum_tot + sum_backgound)
+        self.info_form_layout.addRow(
+            "Percent mapping spots in total:",
+            QLabel(f"{round(total_pct*100, 2)}%")
+        )
+
+        # make percent mapped genes plot
         self.gene_bar_chart = QWebEngineView(self)
-        b = px.bar(self.seg.pct_mapped_genes, labels={"value": "% spots mapped", "gene": "Genes"})
-        html = b.to_html(include_plotlyjs='cdn')
+        self.gene_bar_chart.setGeometry(0, 0, 1000, 500)
+        b = px.bar(
+            data_frame=self.seg.pct_mapped_genes*100,
+            labels={"value": "% spots mapped", "gene": "Genes"}
+        )
+        html = b.to_html(include_plotlyjs="cdn")
         self.gene_bar_chart.setHtml(html)
         
+        self.info_form_layout.addWidget(self.gene_bar_chart)
 
-
-        #self.win = plot()
-        #self.gene_bar_chart = BarGraphItem(x=range(len(self.seg.pct_mapped_genes)), height=self.seg.pct_mapped_genes.values, width=0.6)
-
-        #self.win.addItem(self.gene_bar_chart)
-        self.layout.addWidget(self.gene_bar_chart)
+        self.layout.addLayout(self.info_form_layout)
         self.setLayout(self.layout)
         self.show()
+
 
 class analysisWidget(QWidget):
     """Widget used to run different analysis methods.
