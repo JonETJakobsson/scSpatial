@@ -199,7 +199,7 @@ class loadGenesWidget(QWidget):
         self.df.gene = self.df.gene.astype("category")
 
         # Save gene expression to the dataset
-        self.dataset.gene_expression = self.df
+        self.dataset.add_gene_expression(self.df)
 
         self.btn_confirm_columns.setVisible(False)
 

@@ -14,6 +14,7 @@ class Communicate(QObject):
 
     segmentation_list_changed = pyqtSignal()
     active_segmentation_changed = pyqtSignal()
+    gene_expression_changed = pyqtSignal()
     genes_mapped = pyqtSignal()
     cell_types_changed = pyqtSignal()
 
@@ -71,24 +72,12 @@ class Dataset:
         image = imageio.imread(path)
         self.images[channel] = image
 
-    def load_gene_expression(self, path=False):
-        """Loads gene expression file"""
-        if not path:
-            path = select_file(
-                title="Please select a csv containing gene expression data"
-            )
-
-        df = pd.read_csv(path)
-
-        # TODO Add interface to manually supply which columns that represent
-        #  x, y and gene_name
-        # Currently this is hard coded bellow. We might want to add more
-        # columns such as confident scores etc
-        # in the future
-        df = df[["PosX", "PosY", "Gene"]]
-        df.columns = ["x", "y", "gene"]
-
+    def add_gene_expression(self, df):
+        """Loads gene expression"""
         self.gene_expression = df
+        self.com.gene_expression_changed.emit()
+        #TODO: Connect this signal to downstream functions
+        
 
     def add_segmentation(self, seg: "Segmentation"):
         """add segmentation to the end of list"""
@@ -153,6 +142,7 @@ class Segmentation:
     def __init__(self, dataset: Dataset, type: str, settings: dict = dict()):
         self.set_id()
         self.dataset = dataset
+        self.objects: np.ndarray = None
         self.type = type
         self.settings = dict()
         self.gene_expression: pd.DataFrame = None
