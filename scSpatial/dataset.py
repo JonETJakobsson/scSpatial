@@ -156,6 +156,8 @@ class Segmentation:
         self.type = type
         self.settings = dict()
         self.gene_expression: pd.DataFrame = None
+        self.background: pd.Series = None
+        self.pct_mapped_genes: pd.Series = None
         self.cell_types: pd.DataFrame = None
 
     def set_id(self):
@@ -173,7 +175,9 @@ class Segmentation:
 
     def map_genes(self):
         """map genes to segmented objects.
-        return: gene expression matrix under self.gene_expression"""
+        self.gene_expression: number of genes mapped to each cell
+        self.background: number of genes mapped to backgound
+        self.pct_mapped_genes: percent of induvidual genes mapped to cells"""
         gene_map = list()
         for i, gene in self.dataset.gene_expression.iterrows():
             object_id = self.objects[int(gene.y), int(gene.x)]
@@ -188,6 +192,9 @@ class Segmentation:
         self.gene_expression = df.iloc[1:]
         # Store genes mapping to background
         self.background = df.iloc[0]
+
+        # Calculate percent of genes mapped to cells
+        self.pct_mapped_genes = self.gene_expression.sum() / (self.gene_expression.sum() + self.background)
 
         # broadcast that genes are mapped
         self.dataset.com.genes_mapped.emit()

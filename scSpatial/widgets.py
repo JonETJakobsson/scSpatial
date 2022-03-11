@@ -1,3 +1,4 @@
+from matplotlib.pyplot import ylabel
 import pandas as pd
 
 import imageio
@@ -18,6 +19,7 @@ from PyQt5.QtWidgets import (
     QWidget,
     QTableWidget,
     QTableWidgetItem)
+from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 import sys
 
@@ -504,16 +506,30 @@ class segmentationControlWidget(QWidget):
         self.segmentation_info_widget = segmentationInfoWidget(seg)
 
 class segmentationInfoWidget(QWidget):
-    def __init__(self, seg):
+    def __init__(self, seg: Segmentation):
         super().__init__()
         self.seg = seg
         self.initUI()
 
     def initUI(self):
+        from pyqtgraph import BarGraphItem, plot
+        import plotly.express as px
         self.layout = QVBoxLayout(self)
 
         self.setWindowTitle(f"{self.seg.__repr__()}")
+        self.gene_bar_chart = QWebEngineView(self)
+        b = px.bar(self.seg.pct_mapped_genes, labels={"value": "% spots mapped", "gene": "Genes"})
+        html = b.to_html(include_plotlyjs='cdn')
+        self.gene_bar_chart.setHtml(html)
+        
 
+
+        #self.win = plot()
+        #self.gene_bar_chart = BarGraphItem(x=range(len(self.seg.pct_mapped_genes)), height=self.seg.pct_mapped_genes.values, width=0.6)
+
+        #self.win.addItem(self.gene_bar_chart)
+        self.layout.addWidget(self.gene_bar_chart)
+        self.setLayout(self.layout)
         self.show()
 
 class analysisWidget(QWidget):
