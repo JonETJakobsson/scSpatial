@@ -1,12 +1,9 @@
-import logging
-
 import napari
 
-from scSpatial.dataset import Dataset
-from scSpatial.widgets.main_widget import mainWidget
-from scSpatial.viewer import Viewer
+from .dataset import Dataset
+from .widgets.main_widget import mainWidget
+from .viewer import Viewer
 
-logging.basicConfig(level=logging.DEBUG)
 
 
 class App:
