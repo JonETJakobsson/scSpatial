@@ -22,7 +22,8 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 import sys
 
-from ..dataset import Dataset, Segmentation, segmentCytoplasm, segmentNuclei
+from ..dataset import Dataset
+from ..segmentation import Segmentation, segmentCytoplasm, segmentNuclei
 from ..viewer import Viewer
 from ..analysis import Bonefight
 
@@ -150,11 +151,8 @@ class segmentationCreateWidget(QWidget):
         ]
 
         masks = imageio.imread(path).astype(int)
-        seg = Segmentation(dataset=self.dataset, type="External")
-        seg.objects = masks
-        seg.map_genes()
-
-        self.dataset.add_segmentation(seg)
+        seg = Segmentation(dataset=self.dataset, type="External", objects=masks)
+        
         self.viewer.add_segmentation(seg, self.dataset)
 
     def run_segmentation_test(self):
@@ -174,12 +172,10 @@ class segmentationCreateWidget(QWidget):
                 dataset=crop, size=size, flow_threshold=f_th, mask_threshold=m_th
             )
 
-        seg.run()
-        seg.map_genes()
+      
         self.viewer.add_segmentation(seg, crop)
-        # Manually add segmentation to dataset as it will
-        # only be added to the Crop dataset otherwise
         self.dataset.add_segmentation(seg)
+
 
     def run_segmentation(self):
         size = int(self.lbl_size.text())
@@ -200,9 +196,6 @@ class segmentationCreateWidget(QWidget):
                 flow_threshold=f_th,
                 mask_threshold=m_th,
             )
-
-        seg.run()
-        seg.map_genes()
 
         self.viewer.add_segmentation(seg, self.dataset)
 
@@ -343,6 +336,11 @@ class segmentationInfoWidget(QWidget):
         self.info_form_layout.addRow(
             "Percent mapping spots in total:",
             QLabel(f"{round(total_pct*100, 2)}%")
+        )
+
+        self.info_form_layout.addRow(
+            "Object coverage",
+            QLabel(f"{round(self.seg.object_coverage*100, 2)}%")
         )
 
         # make percent mapped genes plot

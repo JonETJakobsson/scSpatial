@@ -4,7 +4,7 @@ import logging
 import pandas as pd
 import numpy as np
 
-from .dataset import Segmentation
+from .segmentation import Segmentation
 
 
 class Bonefight:

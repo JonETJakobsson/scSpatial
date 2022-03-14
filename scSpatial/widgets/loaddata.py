@@ -22,7 +22,7 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 import sys
 
-from ..dataset import Dataset, Segmentation, segmentCytoplasm, segmentNuclei
+from ..dataset import Dataset
 from ..viewer import Viewer
 from ..analysis import Bonefight
 

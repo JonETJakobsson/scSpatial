@@ -22,7 +22,7 @@ from PyQt5.QtWebEngineWidgets import QWebEngineView
 
 import sys
 
-from ..dataset import Dataset, Segmentation, segmentCytoplasm, segmentNuclei
+from ..dataset import Dataset
 from ..viewer import Viewer
 from ..analysis import Bonefight
 
@@ -43,6 +43,7 @@ class visualizationWidget(QWidget):
         # Set when to update visualization options
         # When active segmentation is set
         self.dataset.com.active_segmentation_changed.connect(self.populate_options)
+        
         # When changes are made to a segmentations cell_types
         self.dataset.com.cell_types_changed.connect(self.populate_options)
 
@@ -72,18 +73,12 @@ class visualizationWidget(QWidget):
 
         self.layout = vbox
 
-    def populate_seg_combo(self):
-        self.seg_combo.clear()
-        if len(self.dataset.segmentation) > 0:
-            for _, seg in self.dataset.segmentation.items():
-                self.seg_combo.addItem(str(seg.id))
-
     def populate_options(self):
         """draws visualization options based on the available data in segmentation"""
         import pandas as pd
 
         self.seg = self.dataset.active_segmentation
-
+        
         used_genes = []
         for gene in self.seg.gene_expression.columns:
             if sum(self.seg.gene_expression[gene]) > 0:
