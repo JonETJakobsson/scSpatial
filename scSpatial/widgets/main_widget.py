@@ -1,12 +1,15 @@
-import sys
 from PyQt5.QtWidgets import QWidget, QTabWidget, QApplication, QVBoxLayout
 from PyQt5.QtGui import QFont
-from widgets import loadWidget, segmentationWidget, colorObjectWidget, analysisWidget
-from dataset import Dataset
+
+import sys
+
+from .loaddata import loadWidget
+from .segmentation import segmentationWidget
+from .analysis import analysisWidget
+from .visualization import visualizationWidget
+from ..dataset import Dataset
 from napari import Viewer
 
-
-h1 = QFont("Arial", 13)
 
 
 # Main widget presents the tabs and can provide other global tools
@@ -27,7 +30,7 @@ class mainWidget(QWidget):
         self.tabs.addTab(loadWidget(self.dataset, self.viewer), "Load Data")
         self.tabs.addTab(segmentationWidget(self.dataset, self.viewer), "Segmentation")
         self.tabs.addTab(analysisWidget(self.dataset, self.viewer), "Analysis")
-        self.tabs.addTab(colorObjectWidget(self.dataset, self.viewer), "Visualization")
+        self.tabs.addTab(visualizationWidget(self.dataset, self.viewer), "Visualization")
 
         # Add all widgets in order
         layout.addWidget(self.tabs)

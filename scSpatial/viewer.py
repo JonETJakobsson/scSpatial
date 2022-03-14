@@ -1,6 +1,7 @@
 
 import napari
-from dataset import Dataset, Segmentation
+
+from .dataset import Dataset, Segmentation
 
 
 class Viewer(napari.Viewer):

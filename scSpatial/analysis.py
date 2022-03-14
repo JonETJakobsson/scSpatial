@@ -1,9 +1,10 @@
 from scanpy import AnnData
-from dataset import Segmentation
 import bone_fight as bf
 import logging
 import pandas as pd
 import numpy as np
+
+from .dataset import Segmentation
 
 
 class Bonefight:

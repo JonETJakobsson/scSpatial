@@ -6,7 +6,7 @@ import numpy as np
 
 from typing import Tuple
 
-from utility import select_file
+from .utility import select_file
 
 
 class Communicate(QObject):
