@@ -20,9 +20,9 @@ class Segmentation:
     def __init__(self, dataset: "Dataset", type: str, settings: dict = dict(), objects: np.ndarray = None):
         self.set_id()
         self.dataset = dataset
-        self.objects: np.ndarray = objects
+        self.objects = objects
         self.type = type
-        self.settings = dict()
+        self.settings = settings
         self.gene_expression: pd.DataFrame = None
         self.background: pd.Series = None
         self.pct_mapped_genes: pd.Series = None

@@ -19,6 +19,7 @@ from PyQt5.QtWidgets import (
     QTableWidget,
     QTableWidgetItem)
 from PyQt5.QtWebEngineWidgets import QWebEngineView
+import napari
 
 import sys
 
@@ -251,6 +252,11 @@ class segmentationControlWidget(QWidget):
         seg_info_btn.clicked.connect(self.open_segmentation_info_window)
         self.layout.addWidget(seg_info_btn)
 
+        add_shape_btn = QPushButton("Add shapes to segmentation")
+        add_shape_btn.setToolTip("Adds the currently selected shapes layer as a segmentation. this is usefull for analysing different anatomical regions")
+        add_shape_btn.clicked.connect(self.add_shapes_to_segmentation)
+        self.layout.addWidget(add_shape_btn)
+
         self.layout.addStretch()
         self.setLayout(self.layout)
 
@@ -307,6 +313,16 @@ class segmentationControlWidget(QWidget):
                 i = i + 1
 
         self.seg_table.resizeColumnsToContents()
+
+    def add_shapes_to_segmentation(self):
+        active_layer: napari.layers.Shapes = self.viewer.layers.selection.active
+        if isinstance(active_layer, napari.layers.Shapes):
+            masks = active_layer.to_labels(self.viewer.dims.nsteps)
+            seg = Segmentation(self.dataset, type="From shapes", objects=masks)
+            self.viewer.add_segmentation(seg, self.dataset)
+        else:
+            pass
+        
 
     def open_segmentation_info_window(self):
         """Opens a pop-up window with statistics for a selected segmentation"""
