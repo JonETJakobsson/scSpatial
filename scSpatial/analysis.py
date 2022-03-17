@@ -65,7 +65,7 @@ class Bonefight:
         self.b = bf.View(self.target_tensor, np.ones(self.target_tensor.shape[0]))
        
 
-    def predict(self):
+    def predict(self) -> pd.DataFrame:
         # TODO: add parameters for this
         self.create_reference_view()
         self.create_target_view()
