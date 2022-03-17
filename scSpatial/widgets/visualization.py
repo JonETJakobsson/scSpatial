@@ -77,10 +77,12 @@ class visualizationWidget(QWidget):
         """draws visualization options based on the available data in segmentation"""
         import pandas as pd
 
+        # set seg to active segmentation
         self.seg = self.dataset.active_segmentation
         
         used_genes = []
         for gene in self.seg.gene_expression.columns:
+            # Only include genes with expression in at least one object
             if sum(self.seg.gene_expression[gene]) > 0:
                 used_genes.append(gene)
 
@@ -99,12 +101,11 @@ class visualizationWidget(QWidget):
     def color_genes(self, gene):
         """Sets object color by selected gene"""
         import numpy as np
-        from sklearn.preprocessing import minmax_scale
         from vispy.color.colormap import MatplotlibColormap
 
         values = self.seg.gene_expression[gene].values
         values = np.log1p(values)
-        values = minmax_scale(values)
+        values = values/values.max()
         cmap = MatplotlibColormap("inferno")
         colors = cmap[values]
         self.viewer.layers[self.seg.__repr__()].color = dict(
@@ -116,12 +117,11 @@ class visualizationWidget(QWidget):
     def color_cell_type(self, cell_type):
         """Sets object color by selected gene"""
         import numpy as np
-        from sklearn.preprocessing import minmax_scale
         from vispy.color.colormap import MatplotlibColormap
 
         values = self.seg.cell_types[cell_type].values
         values = np.log1p(values)
-        values = minmax_scale(values)
+        values = values/values.max()
         cmap = MatplotlibColormap("inferno")
         colors = cmap[values]
         self.viewer.layers[self.seg.__repr__()].color = dict(
