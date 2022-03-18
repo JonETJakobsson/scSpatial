@@ -19,6 +19,8 @@ from PyQt5.QtWidgets import (
     QTableWidget,
     QTableWidgetItem)
 from PyQt5.QtWebEngineWidgets import QWebEngineView
+import numpy as np
+from vispy.color.colormap import Colormap, MatplotlibColormap
 
 import sys
 
@@ -30,7 +32,7 @@ from ..analysis import Bonefight
 
 class visualizationWidget(QWidget):
     """Widget used to color objects by different features
-    (currently gene expression)"""
+    (currently gene expression and cell type)"""
 
     def __init__(self, dataset: Dataset, viewer: Viewer):
         super().__init__()
@@ -50,12 +52,21 @@ class visualizationWidget(QWidget):
         # Gene selection list
         self.gene_combo = QComboBox(self)
         # When gene is selected
-        self.gene_combo.currentTextChanged.connect(self.color_genes)
+        #self.gene_combo.currentTextChanged.connect(self.color_genes)
+        self.add_gene_btn = QPushButton("Add gene")
+        self.add_gene_btn.clicked.connect(self.add_gene)
 
         # Cell type selection list
         self.cell_type_combo = QComboBox(self)
         # When cell type is selected
-        self.cell_type_combo.currentTextChanged.connect(self.color_cell_type)
+        #self.cell_type_combo.currentTextChanged.connect(self.color_cell_type)
+        self.add_cell_type_btn = QPushButton("Add cell type")
+        self.add_cell_type_btn.clicked.connect(self.add_cell_type)
+
+        #Color selection
+        color_options = ["blue", "green", "red", "cyan", "magenta", "yellow", "white"]
+        self.color_combo = QComboBox(self)
+        self.color_combo.addItems(color_options)
 
         # Reset button
         self.reset_button = QPushButton(self)
@@ -64,10 +75,14 @@ class visualizationWidget(QWidget):
 
         # Layout of widget
         vbox = QVBoxLayout(self)
+        vbox.addWidget(QLabel("Select color:"))
+        vbox.addWidget(self.color_combo)
         vbox.addWidget(QLabel("Color by gene:"))
         vbox.addWidget(self.gene_combo)
+        vbox.addWidget(self.add_gene_btn)
         vbox.addWidget(QLabel("Color by cell type:"))
         vbox.addWidget(self.cell_type_combo)
+        vbox.addWidget(self.add_cell_type_btn)
         vbox.addWidget(self.reset_button)
         vbox.addStretch()
 
@@ -98,11 +113,52 @@ class visualizationWidget(QWidget):
             for cell_type in self.seg.cell_types.columns:
                 self.cell_type_combo.addItem(cell_type)
 
-    def color_genes(self, gene):
-        """Sets object color by selected gene"""
+    def add_gene(self):
+        """Add gene to viewer"""
+    
+
+
+        gene = self.gene_combo.currentText()
+        color = self.color_combo.currentText()
+        values = self.seg.gene_expression[gene].values
+        values = np.log1p(values)
+        values = values/values.max()
+        cmap = Colormap(["black", color])
+        colors = cmap[values]
+        colors = dict(
+            zip(self.seg.gene_expression.index, colors.rgba)
+        )
+        self.viewer.add_labels(
+            self.seg.objects,
+            name = f"{gene} - {color}",
+            color = colors,
+            blending = "additive")
+        
+
+    def add_cell_type(self):
+        """Add cell type to viewer"""
         import numpy as np
         from vispy.color.colormap import MatplotlibColormap
 
+        cell_type = self.cell_type_combo.currentText()
+        color = self.color_combo.currentText()
+        values = self.seg.cell_types[cell_type].values
+        values = np.log1p(values)
+        values = values/values.max()
+        cmap = Colormap(["black", color])
+        colors = cmap[values]
+        colors = dict(
+            zip(self.seg.cell_types.index, colors.rgba)
+        )
+        self.viewer.add_labels(
+            self.seg.objects,
+            name = f"{cell_type} - {color}",
+            color = colors,
+            blending = "additive")
+
+
+    def color_genes(self, gene):
+        """Sets object color by selected gene"""
         values = self.seg.gene_expression[gene].values
         values = np.log1p(values)
         values = values/values.max()
@@ -116,9 +172,6 @@ class visualizationWidget(QWidget):
 
     def color_cell_type(self, cell_type):
         """Sets object color by selected gene"""
-        import numpy as np
-        from vispy.color.colormap import MatplotlibColormap
-
         values = self.seg.cell_types[cell_type].values
         values = np.log1p(values)
         values = values/values.max()
