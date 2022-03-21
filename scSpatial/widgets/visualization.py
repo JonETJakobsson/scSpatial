@@ -17,7 +17,8 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
     QTableWidget,
-    QTableWidgetItem)
+    QTableWidgetItem,
+    QSpinBox)
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import numpy as np
 from vispy.color.colormap import Colormap, MatplotlibColormap
@@ -52,7 +53,10 @@ class visualizationWidget(QWidget):
         # Gene selection list
         self.gene_combo = QComboBox(self)
         # When gene is selected
-        #self.gene_combo.currentTextChanged.connect(self.color_genes)
+        self.gene_th_spin = QSpinBox(self)
+        self.gene_th_spin.setRange(1, 10)
+        self.gene_th_spin.setToolTip("Select number of gene spots needed to color the cell")
+
         self.add_gene_btn = QPushButton("Add gene")
         self.add_gene_btn.clicked.connect(self.add_gene)
 
@@ -74,19 +78,16 @@ class visualizationWidget(QWidget):
         self.reset_button.clicked.connect(self.color_reset)
 
         # Layout of widget
-        vbox = QVBoxLayout(self)
-        vbox.addWidget(QLabel("Select color:"))
-        vbox.addWidget(self.color_combo)
-        vbox.addWidget(QLabel("Color by gene:"))
-        vbox.addWidget(self.gene_combo)
-        vbox.addWidget(self.add_gene_btn)
-        vbox.addWidget(QLabel("Color by cell type:"))
-        vbox.addWidget(self.cell_type_combo)
-        vbox.addWidget(self.add_cell_type_btn)
-        vbox.addWidget(self.reset_button)
-        vbox.addStretch()
+        form = QFormLayout(self)
+        form.addRow(QLabel("Select color:"), self.color_combo)
+        form.addRow(QLabel("Color by gene:"), self.gene_combo)
+        form.addRow(QLabel("gene spots threshold:"), self.gene_th_spin)
+        form.addWidget(self.add_gene_btn)
+        form.addRow(QLabel("Color by cell type:"), self.cell_type_combo)
+        form.addWidget(self.add_cell_type_btn)
+        form.addWidget(self.reset_button)
 
-        self.layout = vbox
+        self.layout = form
 
     def populate_options(self):
         """draws visualization options based on the available data in segmentation"""
@@ -120,19 +121,33 @@ class visualizationWidget(QWidget):
 
         gene = self.gene_combo.currentText()
         color = self.color_combo.currentText()
+        th = self.gene_th_spin.value()
         values = self.seg.gene_expression[gene].values
-        values = np.log1p(values)
-        values = values/values.max()
-        cmap = Colormap(["black", color])
-        colors = cmap[values]
-        colors = dict(
-            zip(self.seg.gene_expression.index, colors.rgba)
+        index = self.seg.gene_expression.index
+        image = np.zeros(shape=self.seg.objects.shape)
+        for idx, value in zip(index, values):
+            # Only plot cells with number of gene spots above th
+            if value >= th:
+                # Where segmentation index, set corrisponding value on image
+                image[self.seg.objects == idx] = value
+        self.viewer.add_image(
+            data=image,
+            name=f"{gene} - th:{th}",
+            blending="additive",
+            colormap=color
         )
-        self.viewer.add_labels(
-            self.seg.objects,
-            name = f"{gene} - {color}",
-            color = colors,
-            blending = "additive")
+        #values = np.log1p(values)
+        #values = values/values.max()
+        #cmap = Colormap(["black", color])
+        #colors = cmap[values]
+        #colors = dict(
+        #    zip(index, colors.rgba)
+        #)
+        # self.viewer.add_labels(
+        #     self.seg.objects,
+        #     name = f"{gene} - {color}",
+        #     color = colors,
+        #     blending = "additive")
         
 
     def add_cell_type(self):
