@@ -1,5 +1,6 @@
 import plotly.express as px
 import pandas as pd
+import numpy as np
 import imageio
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QColor
@@ -357,6 +358,16 @@ class segmentationInfoWidget(QWidget):
         self.info_form_layout.addRow(
             "Object coverage",
             QLabel(f"{round(self.seg.object_coverage*100, 2)}%")
+        )
+
+        self.info_form_layout.addRow(
+            "Total number of cells: ",
+            QLabel(f"{np.max(self.seg.objects)}")
+        )
+
+        self.info_form_layout.addRow(
+            "Total number of cells with genes: ",
+            QLabel(f"{self.seg.gene_expression.shape[0]}")
         )
 
         # make percent mapped genes plot
