@@ -125,11 +125,13 @@ class visualizationWidget(QWidget):
         values = self.seg.gene_expression[gene].values
         index = self.seg.gene_expression.index
         image = np.zeros(shape=self.seg.objects.shape)
+
         for idx, value in zip(index, values):
             # Only plot cells with number of gene spots above th
             if value >= th:
-                # Where segmentation index, set corrisponding value on image
+                # Where segmentation index, set corresponding value on image
                 image[self.seg.objects == idx] = value
+        
         self.viewer.add_image(
             data=image,
             name=f"{gene} - th:{th}",

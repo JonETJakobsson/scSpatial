@@ -153,7 +153,12 @@ class segmentationCreateWidget(QWidget):
         ]
 
         masks = imageio.imread(path).astype(int)
-        seg = Segmentation(dataset=self.dataset, type="External", objects=masks)
+        seg = Segmentation(
+            dataset=self.dataset,
+            type="External",
+            objects=masks,
+            settings={"name": path.split("/")[-1]}
+        )
         
         self.viewer.add_segmentation(seg, self.dataset)
 

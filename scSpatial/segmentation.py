@@ -3,6 +3,7 @@ from PyQt5.QtCore import QObject, pyqtSignal
 import imageio
 import pandas as pd
 import numpy as np
+from skimage import measure
 
 from typing import Tuple
 
@@ -35,6 +36,8 @@ class Segmentation:
             self.map_genes()
 
         self.calculate_object_coverage()
+        
+        self.calculate_object_features()
 
         self.dataset.add_segmentation(self)
 
@@ -55,6 +58,12 @@ class Segmentation:
         """Calculate percent of image covered in objects"""
         object_pixels = sum(sum(self.objects > 0))
         self.object_coverage = object_pixels / (object_pixels + self.objects.size)
+
+    def calculate_object_features(self):
+        features: pd.DataFrame = measure.regionprops_table(
+            self.objects,
+            properties=["label", "centroid", "area", "equivalent_diameter_area"]
+        )
 
     def map_genes(self):
         """map genes to segmented objects.
