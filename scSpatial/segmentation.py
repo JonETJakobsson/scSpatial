@@ -1,13 +1,7 @@
 from cellpose import models
-from PyQt5.QtCore import QObject, pyqtSignal
-import imageio
 import pandas as pd
 import numpy as np
 from skimage import measure
-
-from typing import Tuple
-
-from .utility import select_file
 
 #Import only for type hinting
 from typing import TYPE_CHECKING
@@ -60,11 +54,17 @@ class Segmentation:
         self.object_coverage = object_pixels / (object_pixels + self.objects.size)
 
     def calculate_object_features(self):
-        features: pd.DataFrame = measure.regionprops_table(
+        features: pd.DataFrame = pd.DataFrame(measure.regionprops_table(
             self.objects,
-            properties=["label", "centroid", "area", "equivalent_diameter_area"]
-        )
+            properties=[
+                "label",
+                "centroid",
+                "area",
+                "equivalent_diameter_area"]
+        ))
+        self.object_features = features
 
+   
     def map_genes(self):
         """map genes to segmented objects.
         self.gene_expression: number of genes mapped to each cell
