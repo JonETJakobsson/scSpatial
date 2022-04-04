@@ -1,33 +1,17 @@
-import plotly.express as px
-import pandas as pd
-import imageio
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont, QColor
 from PyQt5.QtWidgets import (
-    QApplication,
     QComboBox,
-    QFileDialog,
     QFormLayout,
-    QGridLayout,
-    QHBoxLayout,
     QLabel,
-    QListWidget,
     QPushButton,
-    QSlider,
-    QVBoxLayout,
     QWidget,
-    QTableWidget,
-    QTableWidgetItem,
     QSpinBox)
-from PyQt5.QtWebEngineWidgets import QWebEngineView
+
 import numpy as np
 from vispy.color.colormap import Colormap, MatplotlibColormap
 
-import sys
 
 from ..dataset import Dataset
 from ..viewer import Viewer
-from ..analysis import Bonefight
 
 
 
@@ -116,27 +100,46 @@ class visualizationWidget(QWidget):
 
     def add_gene(self):
         """Add gene to viewer"""
-    
+     
 
-
+        # Get settings
         gene = self.gene_combo.currentText()
         color = self.color_combo.currentText()
         th = self.gene_th_spin.value()
+        
+        # Fetch gene expression information
         values = self.seg.gene_expression[gene].values
         index = self.seg.gene_expression.index
-        image = np.zeros(shape=self.seg.objects.shape)
+
+        # downsample the original image if to large to speed up
+        if self.seg.downsampled == None:
+            objects = self.seg.objects.copy()
+            scale = 1.0
+            while objects.shape[0] > 5000 or objects.shape[1] > 5000:
+                # half the resulotion each run
+                objects = objects[::2, ::2]
+                scale += scale
+            self.seg.downsampled = (objects, scale)
+        
+        else:
+            objects = self.seg.downsampled[0]
+            scale = self.seg.downsampled[1]
+
+        # Create a zero canvas of same size as objects
+        image = np.zeros(shape=objects.shape)
 
         for idx, value in zip(index, values):
             # Only plot cells with number of gene spots above th
             if value >= th:
                 # Where segmentation index, set corresponding value on image
-                image[self.seg.objects == idx] = value
+                image[objects == idx] = value
         
         self.viewer.add_image(
             data=image,
             name=f"{gene} - th:{th}",
             blending="additive",
-            colormap=color
+            colormap=color,
+            scale=(scale, scale)
         )
         #values = np.log1p(values)
         #values = values/values.max()

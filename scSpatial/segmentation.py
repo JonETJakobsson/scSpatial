@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 from skimage import measure
 
+from typing import Tuple
+
 #Import only for type hinting
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -23,6 +25,7 @@ class Segmentation:
         self.pct_mapped_genes: pd.Series = None
         self.object_coverage: float = None
         self.cell_types: pd.DataFrame = None
+        self.downsampled: Tuple(np.ndarray, float) = None # used for gene visualization of large images
 
         self.run()
 
