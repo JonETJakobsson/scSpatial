@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .dataset import Dataset
 
-MAX_OBJECTS_SIZE = 5000 # max size of objects image when downsampeling
+MAX_OBJECTS_SIZE = 3000 # max size of objects image when downsampeling
 
 class Segmentation:
     _id = 0
