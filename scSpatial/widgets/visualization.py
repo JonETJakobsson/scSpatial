@@ -26,7 +26,6 @@ class visualizationWidget(QWidget):
         self.initUI()
 
     def initUI(self):
-
         # Set when to update visualization options
         # When active segmentation is set
         self.dataset.com.active_segmentation_changed.connect(self.populate_options)
@@ -51,25 +50,14 @@ class visualizationWidget(QWidget):
         self.add_cell_type_btn = QPushButton("Add cell type")
         self.add_cell_type_btn.clicked.connect(self.add_cell_type)
 
-        #Color selection
-        color_options = ["blue", "green", "red", "cyan", "magenta", "yellow", "white"]
-        self.color_combo = QComboBox(self)
-        self.color_combo.addItems(color_options)
-
-        # Reset button
-        self.reset_button = QPushButton(self)
-        self.reset_button.setText("Reset")
-        self.reset_button.clicked.connect(self.color_reset)
 
         # Layout of widget
         form = QFormLayout(self)
-        form.addRow(QLabel("Select color:"), self.color_combo)
         form.addRow(QLabel("Color by gene:"), self.gene_combo)
         form.addRow(QLabel("gene spots threshold:"), self.gene_th_spin)
         form.addWidget(self.add_gene_btn)
         form.addRow(QLabel("Color by cell type:"), self.cell_type_combo)
         form.addWidget(self.add_cell_type_btn)
-        form.addWidget(self.reset_button)
 
         self.layout = form
 
@@ -100,30 +88,17 @@ class visualizationWidget(QWidget):
 
     def add_gene(self):
         """Add gene to viewer"""
-     
-
         # Get settings
         gene = self.gene_combo.currentText()
-        color = self.color_combo.currentText()
         th = self.gene_th_spin.value()
         
         # Fetch gene expression information
         values = self.seg.gene_expression[gene].values
         index = self.seg.gene_expression.index
 
-        # downsample the original image if to large to speed up
-        if self.seg.downsampled == None:
-            objects = self.seg.objects.copy()
-            scale = 1.0
-            while objects.shape[0] > 5000 or objects.shape[1] > 5000:
-                # half the resulotion each run
-                objects = objects[::2, ::2]
-                scale += scale
-            self.seg.downsampled = (objects, scale)
-        
-        else:
-            objects = self.seg.downsampled[0]
-            scale = self.seg.downsampled[1]
+        # Use downsampled objects
+        objects = self.seg.downsampled[0]
+        scale = self.seg.downsampled[1]
 
         # Create a zero canvas of same size as objects
         image = np.zeros(shape=objects.shape)
@@ -138,72 +113,34 @@ class visualizationWidget(QWidget):
             data=image,
             name=f"{gene} - th:{th}",
             blending="additive",
-            colormap=color,
+            opacity=0.7,
             scale=(scale, scale)
         )
-        #values = np.log1p(values)
-        #values = values/values.max()
-        #cmap = Colormap(["black", color])
-        #colors = cmap[values]
-        #colors = dict(
-        #    zip(index, colors.rgba)
-        #)
-        # self.viewer.add_labels(
-        #     self.seg.objects,
-        #     name = f"{gene} - {color}",
-        #     color = colors,
-        #     blending = "additive")
-        
 
     def add_cell_type(self):
         """Add cell type to viewer"""
-        import numpy as np
-        from vispy.color.colormap import MatplotlibColormap
-
         cell_type = self.cell_type_combo.currentText()
-        color = self.color_combo.currentText()
+
         values = self.seg.cell_types[cell_type].values
-        values = np.log1p(values)
-        values = values/values.max()
-        cmap = Colormap(["black", color])
-        colors = cmap[values]
-        colors = dict(
-            zip(self.seg.cell_types.index, colors.rgba)
+        index = self.seg.cell_types[cell_type].index
+
+        # Use downsampled objects
+        objects = self.seg.downsampled[0]
+        scale = self.seg.downsampled[1]
+
+        # Create a zero canvas of same size as objects
+        image = np.zeros(shape=objects.shape)
+
+        for idx, value in zip(index, values):
+            # Only plot cells with number of gene spots above th
+            if value > 0:
+                # Where segmentation index, set corresponding value on image
+                image[objects == idx] = value
+        
+        self.viewer.add_image(
+            data=image,
+            name=f"{cell_type}",
+            blending="additive",
+            opacity=0.7,
+            scale=(scale, scale)
         )
-        self.viewer.add_labels(
-            self.seg.objects,
-            name = f"{cell_type} - {color}",
-            color = colors,
-            blending = "additive")
-
-
-    def color_genes(self, gene):
-        """Sets object color by selected gene"""
-        values = self.seg.gene_expression[gene].values
-        values = np.log1p(values)
-        values = values/values.max()
-        cmap = MatplotlibColormap("inferno")
-        colors = cmap[values]
-        self.viewer.layers[self.seg.__repr__()].color = dict(
-            zip(self.seg.gene_expression.index, colors.rgba)
-        )
-        # Change blending to additive to allow black objects to disapear
-        self.viewer.layers[self.seg.__repr__()].blending = "additive"
-
-    def color_cell_type(self, cell_type):
-        """Sets object color by selected gene"""
-        values = self.seg.cell_types[cell_type].values
-        values = np.log1p(values)
-        values = values/values.max()
-        cmap = MatplotlibColormap("inferno")
-        colors = cmap[values]
-        self.viewer.layers[self.seg.__repr__()].color = dict(
-            zip(self.seg.cell_types.index, colors.rgba)
-        )
-        # Change blending to additive to allow black objects to disapear
-        self.viewer.layers[self.seg.__repr__()].blending = "additive"
-
-    def color_reset(self):
-        """Reset object color to auto and translucent."""
-        self.viewer.layers[self.seg.__repr__()].color_mode = "auto"
-        self.viewer.layers[self.seg.__repr__()].blending = "translucent"

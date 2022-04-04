@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .dataset import Dataset
 
+MAX_OBJECTS_SIZE = 5000 # max size of objects image when downsampeling
 
 class Segmentation:
     _id = 0
@@ -25,7 +26,7 @@ class Segmentation:
         self.pct_mapped_genes: pd.Series = None
         self.object_coverage: float = None
         self.cell_types: pd.DataFrame = None
-        self.downsampled: Tuple(np.ndarray, float) = None # used for gene visualization of large images
+        self.downsampled: Tuple[np.ndarray, float] = None # used for gene visualization of large images
 
         self.run()
 
@@ -35,6 +36,8 @@ class Segmentation:
         self.calculate_object_coverage()
         
         self.calculate_object_features()
+
+        self.downsample()
 
         self.dataset.add_segmentation(self)
 
@@ -66,7 +69,6 @@ class Segmentation:
                 "equivalent_diameter_area"]
         ))
         self.object_features = features
-
    
     def map_genes(self):
         """map genes to segmented objects.
@@ -97,6 +99,15 @@ class Segmentation:
     def add_cell_types(self, cell_types: pd.DataFrame):
         self.cell_types = cell_types
         self.dataset.com.cell_types_changed.emit()
+
+    def downsample(self):
+        objects = self.objects.copy()
+        scale = 1.0
+        while objects.shape[0] > MAX_OBJECTS_SIZE or objects.shape[1] > MAX_OBJECTS_SIZE:
+            # half the resulotion each run
+            objects = objects[::2, ::2]
+            scale += scale
+        self.downsampled = (objects, scale)
 
 
 class segmentNuclei(Segmentation):
