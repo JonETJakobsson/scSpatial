@@ -6,9 +6,9 @@ For high resolution gene expression analysis, where the exact position of a gene
 
 *   Segmentation using Cellpose (nuclei)
 *   Segmentation using Cellpose (cytoplasm)
-*   Loading of 3rd party segmentation
+*   Loading of 3rd party segmentation (ImageJ, Ilastik, CellProfiler etc.)
 
-[Cellpose](http://www.cellpose.org/) can be used with data including onle nuclei staining or images with both nclei and cytoplsm markers. Note that for high gene mapping percentages, cytoplasm markers are prefered!
+[Cellpose](http://www.cellpose.org/) can be used with data including only nuclei staining or images with both nuclei and cytoplasm markers. To achive high gene mapping ratios, segmentation using cytoplasm markers are prefered!
 
 ## 2. Information transfer
 With a segmented image, it is possible to map genes to objects (cells) creating a table with gene expression for each object. This information is similar to the data in scRNA-seq datasets, and information transfer between a reference dataset and the spatial mapping can be performed using the [Tangram](https://www.nature.com/articles/s41592-021-01264-7) method. Here we have implemented the [BoneFight](https://github.com/linnarsson-lab/BoneFight) modification from Linnarssons lab which allows for cell cluster based computation.
