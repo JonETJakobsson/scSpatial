@@ -1,8 +1,5 @@
 # SpatialOmics
-This software aims to allow analysis of spatial omics data by integrating segmentation methods and information transfer methods in a graphical UI.
-
-## What can I do?
-Interactions with your images are allowed by the multi dimentional image viewer [Napari](https://napari.org/). This package adds on a backend that handles the images and gene expression data and this is controlled with a widget in the Napari viewer.
+This software aims to allow analysis of spatial omics data by integrating segmentation methods and information transfer methods in a graphical UI. Interactions with your images are allowed by the multi dimentional image viewer [Napari](https://napari.org/). This package provides segmentation  of the cells and mapping of gene expression data. This is controlled by a widget in the Napari viewer.
 
 ## 1. Segmentation
 For high resolution gene expression analysis, where the exact position of a gene is known (such as in [HybISS](https://pubmed.ncbi.nlm.nih.gov/32990747/)), segmentation of the cells are critical to allow cell level analysis of gene expression. We include several options for cell segmentation:
