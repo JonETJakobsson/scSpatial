@@ -1,3 +1,5 @@
+[![PyPI version](https://badge.fury.io/py/scSpatial.svg)](https://badge.fury.io/py/scSpatial)
+
 # scSpatial
 This software aims to allow analysis of spatial omics data by integrating segmentation methods and information transfer methods in a graphical UI. Interactions with your images are allowed by the multi dimentional image viewer [Napari](https://napari.org/). This package provides segmentation  of the cells and mapping of gene expression data. This is controlled by a widget in the Napari viewer.
 
