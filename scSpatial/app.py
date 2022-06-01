@@ -33,3 +33,8 @@ class App:
 
 
 app = App()
+
+
+def run():
+    "Entry point for CLI"
+    app = App()
