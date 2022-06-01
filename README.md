@@ -29,6 +29,12 @@ Install scSpatial using pip:
  ```
  pip install scSpatial
  ```
+ 
+ Next we install some dependencies that are not available via pip:
+```bash
+pip install git+https://github.com/linnarsson-lab/BoneFight.git@8c1ec1f
+pip install git+https://github.com/linnarsson-lab/loompy.git@master
+```
 ## Running napari with the scSpatial widget
 To open Napari with the scSpatial widget, run the scSpatial command in the terminal:
 ```bash
