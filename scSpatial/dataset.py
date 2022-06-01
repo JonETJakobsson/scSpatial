@@ -114,6 +114,8 @@ class Dataset:
         dataset.translate = (x0, y0)
 
         # Cropping images
+        # TODO: investigate effect of modifying the iterable (image)
+        # Should these be moved to another variable fist?
         for name, image in self.images.items():
             dataset.images[name] = image[x0:x1, y0:y1].copy()
 
