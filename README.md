@@ -17,22 +17,29 @@ With a segmented image, it is possible to map genes to objects (cells) creating 
 Currently, we support visualization of gene expression and cell type prediction. This section will be expanded as new tools are implemented.
 
 # Getting started
-## Installing the environment
-Create an environment in using the environment.yml file. This is done using the command `conda env create -f environment.yml`. Should you have to reinstall this environment, like after the environment file has been changes, run `conda env create -f environment.yml --force`
-
-Activate the environment using `conda activate scSpatial`.
+## Installation
+Install Miniconda or Anaconda and create a virtual environment with python 3.7 and activate it.
+```bash
+conda create -n scSpatial python=3.7
+conda activate scSpatial
+```
+Install scSpatial using pip:
+ ```
+ pip install scSpatial
+ ```
 ## Running napari with the scSpatial widget
-To start napari with the scSpatial widget you can run the file Run.py found in the root of the repository from your shell.
-```
-python Run.py
+To open Napari with the scSpatial widget, run the scSpatial command in the terminal:
+```bash
+scSpatial
 ```
 
-If you want to start napari from within your own pipeline, import the `scSpatial.app.App` class and instantiate it.
+If you want to start napari from within your own pipeline/script, import the `scSpatial.app.App` class and instantiate it.
 
 ```python
 from scSpatial.app import App
 app = App()
 ```
+
 
 
 
