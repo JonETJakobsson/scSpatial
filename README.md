@@ -1,3 +1,5 @@
+[![PyPI version](https://badge.fury.io/py/scSpatial.svg)](https://badge.fury.io/py/scSpatial)
+
 # scSpatial
 This software aims to allow analysis of spatial omics data by integrating segmentation methods and information transfer methods in a graphical UI. Interactions with your images are allowed by the multi dimentional image viewer [Napari](https://napari.org/). This package provides segmentation  of the cells and mapping of gene expression data. This is controlled by a widget in the Napari viewer.
 
@@ -27,6 +29,12 @@ Install scSpatial using pip:
  ```
  pip install scSpatial
  ```
+ 
+ Next we install some dependencies that are not available via pip:
+```bash
+pip install git+https://github.com/linnarsson-lab/BoneFight.git@8c1ec1f
+pip install git+https://github.com/linnarsson-lab/loompy.git@e0963fb
+```
 ## Running napari with the scSpatial widget
 To open Napari with the scSpatial widget, run the scSpatial command in the terminal:
 ```bash
