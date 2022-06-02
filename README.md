@@ -48,7 +48,13 @@ from scSpatial.app import App
 app = App()
 ```
 
+# Change Log
 
+## v1.0.1
+- Constrained Cellpose to version 1.0.2 as later versions cased errors.
+
+## V1.0.0
+Initial release
 
 
 
