@@ -30,11 +30,3 @@ class App:
 
         self.viewer.show()
         napari.run()
-
-
-app = App()
-
-
-def run():
-    "Entry point for CLI"
-    app = App()

@@ -132,7 +132,8 @@ class segmentNuclei(Segmentation):
             self.dataset.images["Nuclei"],
             diameter=self.size,
             flow_threshold=self.flow_threshold,
-            mask_threshold=self.mask_threshold,
+            cellprob_threshold=self.mask_threshold,
+            resample=False
         )
 
         self.objects = masks
@@ -169,7 +170,8 @@ class segmentCytoplasm(Segmentation):
             channels=[2, 1],
             diameter=self.size,
             flow_threshold=self.flow_threshold,
-            mask_threshold=self.mask_threshold,
+            cellprob_threshold=self.mask_threshold,
+            resample=False
         )
 
         self.objects = masks

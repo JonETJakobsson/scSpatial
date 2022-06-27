@@ -50,6 +50,10 @@ app = App()
 
 # Change Log
 
+## v1.0.2
+- Bumped version of cellpose to > 2.0.4
+- Removed resample during cell pose model evaluation to speed up segmentation.
+
 ## v1.0.1
 - Constrained Cellpose to version 1.0.2 as later versions cased errors.
 
