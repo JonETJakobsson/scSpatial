@@ -298,6 +298,10 @@ class segmentationControlWidget(QWidget):
         writer = pd.ExcelWriter(path)
         seg.gene_expression.to_excel(writer, sheet_name="Gene Expression")
         seg.background.to_excel(writer, sheet_name="Background")
+
+        if isinstance(seg.cell_types, pd.DataFrame):
+            seg.cell_types.to_excel(writer, sheet_name="Bonefight celltypes")
+
         writer.save()
 
     def update_segmentation_list(self):
