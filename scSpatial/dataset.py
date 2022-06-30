@@ -1,6 +1,6 @@
 from cellpose import models
 from PyQt5.QtCore import QObject, pyqtSignal
-import imageio
+import imageio.v3 as imageio
 import pandas as pd
 import numpy as np
 

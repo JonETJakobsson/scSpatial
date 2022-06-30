@@ -52,6 +52,7 @@ app = App()
 
 ## v0.1.3
 - Added Bonefight cell types to segmentation export.
+- Fixed bug where Napari would not set propper contrast limits. This is now set using `numpy.min` and `numpy.max` functions explicitly.
 
 ## v0.1.2
 - Bumped version of cellpose to > 2.0.4

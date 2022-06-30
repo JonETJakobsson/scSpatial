@@ -1,5 +1,6 @@
 
 import napari
+import numpy as np
 
 from .dataset import Dataset
 from .segmentation import Segmentation
@@ -23,20 +24,32 @@ class Viewer(napari.Viewer):
 
     def add_nuclei(self, dataset: Dataset):
         """Add image with key "Nuclei" to viewer"""
+
+        image = dataset.images["Nuclei"]
+        min_v = np.min(image)
+        max_v = np.max(image)
+
         self.add_image(
-            dataset.images["Nuclei"],
+            image,
             name="Nuclei",
             colormap="yellow",
-            blending="additive"
+            blending="additive",
+            contrast_limits=(min_v, max_v)
         )
 
     def add_cytoplasm(self, dataset: Dataset):
         """Add image with key "Cytoplasm" to viewer"""
+
+        image = dataset.images["Cytoplasm"]
+        min_v = np.min(image)
+        max_v = np.max(image)
+
         self.add_image(
-            dataset.images["Cytoplasm"],
+            image,
             name="Cytoplasm",
             colormap="cyan",
-            blending="additive"
+            blending="additive",
+            contrast_limits=(min_v, max_v)
         )
 
     def add_other_channel(
