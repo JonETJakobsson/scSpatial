@@ -76,10 +76,16 @@ class Segmentation:
         self.background: number of genes mapped to backgound
         self.pct_mapped_genes: percent of induvidual genes mapped to cells"""
         gene_map = list()
+        object_list = list()
         for i, gene in self.dataset.gene_expression.iterrows():
             object_id = self.objects[int(gene.y), int(gene.x)]
             gene_map.append((gene.gene, object_id, 1))
+            object_list.append(object_id)
+            
+        #Update segmentation gene enxression with mapped object
+        self.dataset.gene_expression["object_id"] = object_list
 
+        # Create a pivot table to sum up all counts per gene and onject
         df = pd.DataFrame(gene_map, columns=["gene", "object_id", "value"])
         df = df.pivot_table(
             index="object_id", columns="gene", values="value", fill_value=0, aggfunc=sum

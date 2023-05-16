@@ -298,6 +298,7 @@ class segmentationControlWidget(QWidget):
         writer = pd.ExcelWriter(path)
         seg.gene_expression.to_excel(writer, sheet_name="Gene Expression")
         seg.background.to_excel(writer, sheet_name="Background")
+        seg.dataset.gene_expression.to_excel(writer, sheet_name="Object Mapping")
 
         if isinstance(seg.cell_types, pd.DataFrame):
             seg.cell_types.to_excel(writer, sheet_name="Bonefight celltypes")
