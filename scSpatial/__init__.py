@@ -6,7 +6,7 @@ import scSpatial.widgets
 import scSpatial.analysis
 import scSpatial.app
 
-VERSION = "0.1.3"
+VERSION = "0.1.4"
 
 
 def run():

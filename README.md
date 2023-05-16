@@ -50,6 +50,10 @@ app = App()
 
 # Change Log
 
+## v0.1.4 (master)
+- Added mapping of object ID to the gene expression table and included this in the excel export for a given segmentation.
+- Fixed issue with importing the imageio library.
+
 ## v0.1.3
 - Added Bonefight cell types to segmentation export.
 - Fixed bug where Napari would not set propper contrast limits. This is now set using `numpy.min` and `numpy.max` functions explicitly.
