@@ -303,7 +303,7 @@ class segmentationControlWidget(QWidget):
         if isinstance(seg.cell_types, pd.DataFrame):
             seg.cell_types.to_excel(writer, sheet_name="Bonefight celltypes")
 
-        writer.save()
+        writer.close()
 
     def update_segmentation_list(self):
         self.seg_table.clear()
